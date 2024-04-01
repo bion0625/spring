@@ -4,7 +4,7 @@ import java.sql.SQLException;
 
 import springbook.user.domain.User;
 
-public class userDaoTest {
+public class UserDaoTest {
     public static void main(String[] args) throws ClassNotFoundException, SQLException {
         UserDao dao = new DaoFactory().userDao();
 
