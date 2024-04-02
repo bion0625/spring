@@ -11,7 +11,9 @@ public class UserDao { // 싱글톤 패턴을 적용한 UserDao
 
     private static UserDao INSTANCE;
 
-    private ConnectionMaker connectionMaker; // 인터페이스를 통해 오브젝트에 접근하므로 구체적인 클래스 정보를 알 필요가 없다.
+    private ConnectionMaker connectionMaker; // 초기에 설정하면 사용 중에는 바뀌지 않는 읽기전용 인스턴스 변수
+    private Connection c; // 매번 새로운 값으로 바뀌는 정보를 담은 인스턴스 변수
+    private User user; // 매번 새로운 값으로 바뀌는 정보를 담은 인스턴스 변수
 
     private UserDao(ConnectionMaker connectionMaker) {
         this.connectionMaker = connectionMaker;
@@ -49,7 +51,7 @@ public class UserDao { // 싱글톤 패턴을 적용한 UserDao
     }
 
     public User get(String id) throws ClassNotFoundException, SQLException {
-        Connection c = connectionMaker.makeConnection(); // 인터페이스에 정의된 메소드를 사용하므로 클래스가 바뀐다고 해도 메소드 이름이 변경될 걱정은 없다.
+        this.c = connectionMaker.makeConnection(); // 인터페이스에 정의된 메소드를 사용하므로 클래스가 바뀐다고 해도 메소드 이름이 변경될 걱정은 없다.
 
         PreparedStatement ps = c.prepareStatement(
             "select * from users where id = ?");
@@ -57,15 +59,15 @@ public class UserDao { // 싱글톤 패턴을 적용한 UserDao
 
         ResultSet rs = ps.executeQuery();
         rs.next();
-        User user = new User();
-        user.setId(rs.getString("id"));
-        user.setName(rs.getString("name"));
-        user.setPassword(rs.getString("password"));
+        this.user = new User();
+        this.user.setId(rs.getString("id"));
+        this.user.setName(rs.getString("name"));
+        this.user.setPassword(rs.getString("password"));
 
         rs.close();
         ps.close();
         c.close();
 
-        return user;
+        return this.user;
     }
 }
