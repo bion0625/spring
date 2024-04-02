@@ -7,21 +7,17 @@ import java.sql.SQLException;
 
 import springbook.user.domain.User;
 
-public class UserDao { // 싱글톤 패턴을 적용한 UserDao
+public class UserDao {
 
-    private static UserDao INSTANCE;
+    private ConnectionMaker connectionMaker; // 인터페이스를 통해 오브젝트에 접근하므로 구체적인 클래스 정보를 알 필요가 없다.
 
-    private ConnectionMaker connectionMaker; // 초기에 설정하면 사용 중에는 바뀌지 않는 읽기전용 인스턴스 변수
-    private Connection c; // 매번 새로운 값으로 바뀌는 정보를 담은 인스턴스 변수
-    private User user; // 매번 새로운 값으로 바뀌는 정보를 담은 인스턴스 변수
-
-    private UserDao(ConnectionMaker connectionMaker) {
+    public UserDao(ConnectionMaker connectionMaker) {
         this.connectionMaker = connectionMaker;
     }
 
-    public static synchronized UserDao getInstance(ConnectionMaker connectionMaker) {
-        if (INSTANCE == null) INSTANCE = new UserDao(connectionMaker);
-        return INSTANCE;
+    public UserDao() { // 의존관계 검색
+        DaoFactory factory = new DaoFactory();
+        this.connectionMaker = factory.connectionMaker();
     }
 
     public void deleteAll() throws ClassNotFoundException, SQLException {
@@ -51,7 +47,7 @@ public class UserDao { // 싱글톤 패턴을 적용한 UserDao
     }
 
     public User get(String id) throws ClassNotFoundException, SQLException {
-        this.c = connectionMaker.makeConnection(); // 인터페이스에 정의된 메소드를 사용하므로 클래스가 바뀐다고 해도 메소드 이름이 변경될 걱정은 없다.
+        Connection c = connectionMaker.makeConnection(); // 인터페이스에 정의된 메소드를 사용하므로 클래스가 바뀐다고 해도 메소드 이름이 변경될 걱정은 없다.
 
         PreparedStatement ps = c.prepareStatement(
             "select * from users where id = ?");
@@ -59,15 +55,15 @@ public class UserDao { // 싱글톤 패턴을 적용한 UserDao
 
         ResultSet rs = ps.executeQuery();
         rs.next();
-        this.user = new User();
-        this.user.setId(rs.getString("id"));
-        this.user.setName(rs.getString("name"));
-        this.user.setPassword(rs.getString("password"));
+        User user = new User();
+        user.setId(rs.getString("id"));
+        user.setName(rs.getString("name"));
+        user.setPassword(rs.getString("password"));
 
         rs.close();
         ps.close();
         c.close();
 
-        return this.user;
+        return user;
     }
 }

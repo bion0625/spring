@@ -11,6 +11,8 @@ public class UserDaoTest {
     public static void main(String[] args) throws ClassNotFoundException, SQLException {
         ApplicationContext context = new AnnotationConfigApplicationContext(DaoFactory.class);
         UserDao dao = context.getBean("specialUserDao", UserDao.class);
+        
+        dao = new UserDao();
 
         dao.deleteAll();
 
