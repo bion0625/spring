@@ -1,0 +1,37 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "NUserDao",
+            "request": "launch",
+            "mainClass": "springbook.user.dao.NUserDao",
+            "projectName": "spring_9346a3da"
+        },
+        {
+            "type": "java",
+            "name": "UserDaoConnectionCountingTest",
+            "request": "launch",
+            "mainClass": "springbook.user.dao.UserDaoConnectionCountingTest",
+            "projectName": "spring_9346a3da",
+            "vmArgs": "--add-opens java.base/java.lang=ALL-UNNAMED"
+        },
+        {
+            "type": "java",
+            "name": "UserDaoTest",
+            "request": "launch",
+            "mainClass": "springbook.user.dao.UserDaoTest",
+            "projectName": "spring_9346a3da",
+            "vmArgs": "--add-opens java.base/java.lang=ALL-UNNAMED"
+        }
+    ]
+}
