@@ -8,12 +8,16 @@ public class CountingDaoFactory {
 
     @Bean
     public UserDao userDao() {
-        return new UserDao(connectionMaker()); // 모든 DAO는 여전히 connectionMaker()에서 만들어진 오브젝트를 DI 받는다.
+        UserDao userDao = new UserDao();
+        userDao.setConnectionMaker(connectionMaker());
+        return userDao; // 모든 DAO는 여전히 connectionMaker()에서 만들어진 오브젝트를 DI 받는다.
     }
 
     @Bean
     public UserDao specialUserDao() {
-        return new UserDao(connectionMaker());
+        UserDao userDao = new UserDao();
+        userDao.setConnectionMaker(connectionMaker());
+        return userDao;
     }
 
     @Bean
