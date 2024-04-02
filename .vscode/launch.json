@@ -35,3 +35,6 @@
         }
     ]
 }
+
+// Java9 이후부터는 reflection API 관련 기능에 제한 이슈 오류코드
+// Caused by: java.lang.reflect.InaccessibleObjectException: Unable to make protected final java.lang.Class java.lang.ClassLoader.defineClass(java.lang.String,byte[],int,int,java.security.ProtectionDomain) throws java.lang.ClassFormatError accessible: module java.base does not "opens java.lang" to unnamed module @2a18f23c at java.base/java.lang.reflect.AccessibleObject.checkCanSetAccessible(AccessibleObject.java:354) at java.base/java.lang.reflect.AccessibleObject.checkCanSetAccessible(AccessibleObject.java:297) at java.base/java.lang.reflect.Method.checkCanSetAccessible(Method.java:199) at java.base/java.lang.reflect.Method.setAccessible(Method.java:193) at net.sf.cglib.core.ReflectUtils$2.run(ReflectUtils.java:56) at java.base/java.security.AccessController.doPrivileged(AccessController.java:318) at net.sf.cglib.core.ReflectUtils.<clinit>(ReflectUtils.java:46)
