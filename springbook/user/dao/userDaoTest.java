@@ -12,8 +12,6 @@ public class UserDaoTest {
         ApplicationContext context = new AnnotationConfigApplicationContext(DaoFactory.class);
         UserDao dao = context.getBean("specialUserDao", UserDao.class);
         
-        dao = new UserDao();
-
         dao.deleteAll();
 
         User user = new User();
