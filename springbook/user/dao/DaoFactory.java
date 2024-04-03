@@ -7,31 +7,31 @@ import org.springframework.context.annotation.Configuration;
 public class DaoFactory {
     @Bean // 오브젝트 생성을 담당하는 IoC용 메소드라는 표시
     public UserDao userDao() {
-        ConnectionMaker connectionMaker = connectionMaker();
         UserDao userDao = new UserDao();
-        userDao.setConnectionMaker(connectionMaker);
+        userDao.setConnectionMaker(connectionMaker());
         return userDao;
     }
+    // XML
+    // <bean id="userDao" class="springbook.user.dao.userDao">
+    //  <property name="connectionMaker" ref="connectionMaker"/>
+    // <bean id="userDao" class="springbook.user.dao.userDao">
 
     @Bean
     public UserDao specialUserDao() {
-        ConnectionMaker connectionMaker = connectionMaker();
         UserDao userDao = new UserDao();
-        userDao.setConnectionMaker(connectionMaker);
+        userDao.setConnectionMaker(connectionMaker());
         return userDao;
     }
 
     @Bean
     public AccountDao accountDao() {
-        ConnectionMaker connectionMaker =connectionMaker();
-        AccountDao accountDao = new AccountDao(connectionMaker);
+        AccountDao accountDao = new AccountDao(connectionMaker());
         return accountDao;
     }
 
     @Bean
     public MassageDao massageDao() {
-        ConnectionMaker connectionMaker = connectionMaker();
-        MassageDao massageDao = new MassageDao(connectionMaker);
+        MassageDao massageDao = new MassageDao(connectionMaker());
         return massageDao;
     }
 
@@ -39,8 +39,21 @@ public class DaoFactory {
     public ConnectionMaker connectionMaker() {
         return new DConnectionMaker(); // 분리해서 중복을 제거한 ConnectionMaker 타입 오브젝트 생성 코드
     }
+    // XML
+    // <bean id="connectionMaker" class="springbook.user.dao.DConnectionMaker"/>
 }
 /*
  * spring context jar 확인
  * https://repo1.maven.org/maven2/org/springframework/spring-context/5.2.9.RELEASE/
+*/
+
+/*
+ * XML
+ *  <beans>
+ *      <bean id="myConnectionMaker" class="springbook.user.dao.DConnectionMaker" />
+ *      <bean id="userDao" class="springbook.user.dao.userDao">
+ *          <property name="connectionMaker" ref="myConnectionMaker"/>
+ *      </bean>
+ *  </beans>
+ * 
 */
