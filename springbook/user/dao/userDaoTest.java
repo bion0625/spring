@@ -6,7 +6,7 @@ import static org.hamcrest.CoreMatchers.is;
 import java.sql.SQLException;
 
 import org.springframework.dao.EmptyResultDataAccessException;
-
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.JUnitCore;
 import org.springframework.context.ApplicationContext;
@@ -16,21 +16,29 @@ import springbook.user.domain.User;
 
 public class UserDaoTest {
 
+    UserDao dao;
+    User user1;
+    User user2;
+    User user3;
+
     public static void main(String[] args) {
         JUnitCore.main("springbook.user.dao.UserDaoTest");
     }
 
+    @Before
+    public void setUp() {
+        ApplicationContext context = new GenericXmlApplicationContext("applicationContext.xml");
+        dao = context.getBean("specialUserDao", UserDao.class);
+        user1 = new User("gyumee", "박성철", "springno1");
+        user2 = new User("leegw700", "이길원", "springno2");
+        user3 = new User("bumjin", "박범진", "springno3");
+    }
+
     @Test // JUnit에게 테스트용 메소드임을 알려준다.
     public void addAndGet() throws SQLException { // JUnit 메소드는 반드시 public으로 선언되어야 한다.
-        ApplicationContext context = new GenericXmlApplicationContext("applicationContext.xml");
-
-        UserDao dao = context.getBean("specialUserDao", UserDao.class);
 
         dao.deleteAll();
         assertThat(dao.getCount(), is(0));
-
-        User user1 = new User("gyumee", "박성철", "springno1");
-        User user2 = new User("leegw700", "이길원", "springno2"); // 중복되지 않는 값을 가진 두 개의 User 오브젝트를 준비해둔다.
 
         dao.add(user1);
         dao.add(user2);
@@ -47,12 +55,6 @@ public class UserDaoTest {
     
     @Test
     public void count() throws SQLException {
-        ApplicationContext context = new GenericXmlApplicationContext("applicationContext.xml");
-
-        UserDao dao = context.getBean("specialUserDao", UserDao.class);
-        User user1 = new User("gyumee", "박성철", "springno1");
-        User user2 = new User("leegw700", "이길원", "springno2");
-        User user3 = new User("bumjin", "박범진", "springno3");
 
         dao.deleteAll();
         assertThat(dao.getCount(), is(0));
@@ -69,8 +71,6 @@ public class UserDaoTest {
 
     @Test(expected = EmptyResultDataAccessException.class) // 테스트 중에 발생할 것으로 기대하는 예외 클래스를 지정해준다.
     public void getUserFailure() throws SQLException {
-        ApplicationContext context = new GenericXmlApplicationContext("applicationContext.xml");
-        UserDao dao = context.getBean("specialUserDao", UserDao.class);
         dao.deleteAll();
         assertThat(dao.getCount(), is(0));
 
