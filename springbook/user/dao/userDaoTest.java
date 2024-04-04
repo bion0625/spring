@@ -8,8 +8,9 @@ import org.springframework.context.support.GenericXmlApplicationContext;
 import springbook.user.domain.User;
 
 public class UserDaoTest {
-    public static void main(String[] args) throws ClassNotFoundException, SQLException {
+    public static void main(String[] args) throws SQLException {
         ApplicationContext context = new GenericXmlApplicationContext("applicationContext.xml");
+
         UserDao dao = context.getBean("specialUserDao", UserDao.class);
         
         dao.deleteAll();
@@ -24,26 +25,13 @@ public class UserDaoTest {
         System.out.println(user.getId() + " 등록 성공");
 
         User user2 = dao.get(user.getId());
-        System.out.println(user2.getName());
-        System.out.println(user2.getPassword());
-
-        System.out.println(user2.getId() + " 조회 성공");
-
-        DaoFactory factory = new DaoFactory();
-        UserDao dao1 = factory.userDao();
-        UserDao dao2 = factory.userDao();
-
-        System.out.println(dao1);
-        System.out.println(dao2);
-
-        System.out.println(dao1 == dao2);
-
-        UserDao dao3 = context.getBean("userDao", UserDao.class);
-        UserDao dao4 = context.getBean("userDao", UserDao.class);
-
-        System.out.println(dao3);
-        System.out.println(dao4);
-
-        System.out.println(dao3 == dao4);
+        
+        if (!user.getName().equals(user2.getName())) {
+            System.out.println("테스트 실패 (name)");
+        } else if (!user.getPassword().equals(user2.getPassword())) {
+            System.out.println("테스트 실패 (password)");
+        } else {
+            System.out.println("조회 테스트 성공");
+        }
     }
 }
