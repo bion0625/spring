@@ -5,6 +5,8 @@ import static org.hamcrest.CoreMatchers.is;
 
 import java.sql.SQLException;
 
+import javax.sql.DataSource;
+
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -24,7 +26,12 @@ public class UserDaoTest {
     @Autowired
     private ApplicationContext context; // 테스트 오브젝트가 만들어지고 나면 스프링 테스트 컨텍스트에 의해 자동으로 값이 주입된다.
 
+    @Autowired
     UserDao dao;
+
+    @Autowired
+    DataSource dataSource;
+
     User user1;
     User user2;
     User user3;
@@ -48,7 +55,6 @@ public class UserDaoTest {
         */
         System.out.println(this);
 
-        dao = this.context.getBean("specialUserDao", UserDao.class);
         user1 = new User("gyumee", "박성철", "springno1");
         user2 = new User("leegw700", "이길원", "springno2");
         user3 = new User("bumjin", "박범진", "springno3");
