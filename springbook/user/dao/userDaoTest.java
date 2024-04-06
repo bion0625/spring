@@ -5,34 +5,17 @@ import static org.hamcrest.CoreMatchers.is;
 
 import java.sql.SQLException;
 
-import javax.sql.DataSource;
-
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.JUnitCore;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 
 import springbook.user.domain.User;
 
-@RunWith(SpringJUnit4ClassRunner.class) // 스프링의 테스트 컨텍스트 프레임워크의 JUnit 확장기능 지정
-@ContextConfiguration(locations = "/test-applicationContext.xml") // 테스트 컨텍스트가 자동으로 만들어줄 애플리케이션 컨텍스트의 위치 지정
 public class UserDaoTest {
 
-    @Autowired
-    private ApplicationContext context; // 테스트 오브젝트가 만들어지고 나면 스프링 테스트 컨텍스트에 의해 자동으로 값이 주입된다.
-
-    @Autowired
-    UserDao dao;
-
-    @Autowired
-    DataSource dataSource;
+    UserDao dao; // @Autowired가 없다.
 
     User user1;
     User user2;
@@ -46,12 +29,14 @@ public class UserDaoTest {
     public void setUp() {
 
         /*
-         * 테스트 할 때마다 모두 동일
-         * @RunWith(SpringJUnit4ClassRunner.class)
-         * @ContextConfiguration(locations = "/applicationContext.xml")
-         * @Autowired private ApplicationContext context;
+         * 오브젝트 생성, 관계 설정 등을 모두 직접 해준다.
         */
-        System.out.println(this.context);
+        SingleConnectionDataSource dataSource = new SingleConnectionDataSource(
+            "jdbc:mysql://localhost:3306/testdb", "root", "admin", true
+        );
+
+        dao = new UserDao();
+        dao.setDataSource(dataSource);
 
         /*
          * 테스트 할 때마다 새로운 오브젝트 생성
