@@ -134,8 +134,5 @@ public class UserDao {
                 }
             }
         }
-
-
-        return count;
     }
 }
