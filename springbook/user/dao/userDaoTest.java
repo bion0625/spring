@@ -35,6 +35,18 @@ public class UserDaoTest {
 
     @Before
     public void setUp() {
+        /*
+         * 테스트 할 때마다 모두 동일
+         * @RunWith(SpringJUnit4ClassRunner.class)
+         * @ContextConfiguration(locations = "/applicationContext.xml")
+         * @Autowired private ApplicationContext context;
+        */
+        System.out.println(this.context);
+
+        /*
+         * 테스트 할 때마다 새로운 오브젝트 생성
+        */
+        System.out.println(this);
 
         dao = this.context.getBean("specialUserDao", UserDao.class);
         user1 = new User("gyumee", "박성철", "springno1");
