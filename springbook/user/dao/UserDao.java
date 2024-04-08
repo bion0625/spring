@@ -26,12 +26,21 @@ public class UserDao {
     }
 
     public void deleteAll() throws SQLException {
+        StatementStrategy st = new DeleteAllStatement(); // 선정한 전략 클래스의 오브젝트 생성
+        jdbcContextWithStatementStrategy(st); // 컨텍스트 호출. 전략 오브젝트 전달
+    }
+
+    public void add(User user) throws SQLException {
         Connection c = null;
         PreparedStatement ps = null;
 
         try { // 예외가 발생할 가능성이 있는 코드를 모두 try 블록으로 묶어준다.
             c = dataSource.getConnection();
-            ps = c.prepareStatement("delete from users");
+            ps = c.prepareStatement(
+            "insert into users(id, name, password) values(?,?,?)");
+            ps.setString(1, user.getId());
+            ps.setString(2, user.getName());
+            ps.setString(3, user.getPassword());
             ps.executeUpdate();
         } catch (SQLException e) { // 예외가 발생했을 때 부가적인 작업을 해줄 수 있도록 catch 블록을 둔다.
             throw e; // 아직은 예외를 다시 메소드 밖으로 던지는 것밖에 없다.
@@ -55,22 +64,6 @@ public class UserDao {
             ps.close();
             c.close();
         }
-
-    }
-
-    public void add(User user) throws SQLException {
-        Connection c = dataSource.getConnection(); // 인터페이스에 정의된 메소드를 사용하므로 클래스가 바뀐다고 해도 메소드 이름이 변경될 걱정은 없다.
-        
-        PreparedStatement ps = c.prepareStatement(
-            "insert into users(id, name, password) values(?,?,?)");
-        ps.setString(1, user.getId());
-        ps.setString(2, user.getName());
-        ps.setString(3, user.getPassword());
-
-        ps.executeUpdate();
-
-        ps.close();
-        c.close();
     }
 
     public User get(String id) throws SQLException {
@@ -133,6 +126,24 @@ public class UserDao {
                 } catch (SQLException e) {
                 }
             }
+        }
+    }
+
+    public void jdbcContextWithStatementStrategy(StatementStrategy stmt) throws SQLException {
+        Connection c = null;
+        PreparedStatement ps = null;
+
+        try {
+            c = dataSource.getConnection();
+            ps = stmt.makPreparedStatement(c);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw e;
+        } finally {
+            if (ps != null) { try { ps.close(); } catch(SQLException e) {} }
+            if (c != null) { try{ c.close(); } catch(SQLException e) {} }
+            ps.close();
+            c.close();
         }
     }
 }
