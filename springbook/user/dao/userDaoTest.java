@@ -5,17 +5,23 @@ import static org.hamcrest.CoreMatchers.is;
 
 import java.sql.SQLException;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.datasource.SingleConnectionDataSource;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.JUnitCore;
+import org.junit.runner.RunWith;
 
 import springbook.user.domain.User;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = "/test-applicationContext.xml")
 public class UserDaoTest {
 
-    UserDao dao; // @Autowired가 없다.
+    @Autowired
+    UserDao dao;
 
     User user1;
     User user2;
@@ -27,16 +33,6 @@ public class UserDaoTest {
 
     @Before
     public void setUp() {
-
-        /*
-         * 오브젝트 생성, 관계 설정 등을 모두 직접 해준다.
-        */
-        SingleConnectionDataSource dataSource = new SingleConnectionDataSource(
-            "jdbc:mysql://localhost:3306/testdb", "root", "admin", true
-        );
-
-        dao = new UserDao();
-        dao.setDataSource(dataSource);
 
         /*
          * 테스트 할 때마다 새로운 오브젝트 생성

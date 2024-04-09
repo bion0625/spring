@@ -13,6 +13,12 @@ import springbook.user.domain.User;
 
 public class UserDao {
 
+    private JdbcContext context;
+
+    public void setJdbcContext(JdbcContext context) { // JdbcContext를 DI받도록 한다.
+        this.context = context;
+    }
+
     private DataSource dataSource; // 인터페이스를 통해 오브젝트에 접근하므로 구체적인 클래스 정보를 알 필요가 없다.
 
     private ConnectionMaker connectionMaker; // 인터페이스를 통해 오브젝트에 접근하므로 구체적인 클래스 정보를 알 필요가 없다.
@@ -26,7 +32,7 @@ public class UserDao {
     }
 
     public void deleteAll() throws SQLException {
-        jdbcContextWithStatementStrategy(new StatementStrategy() {
+        context.workWithStatementStrategy(new StatementStrategy() { // DI 받은 JdbcContext의 컨텍스트 메소드를 사용하도록 변경한다.
             @Override
             public PreparedStatement makPreparedStatement(Connection c) throws SQLException {
                 PreparedStatement ps = c.prepareStatement("delete from users");
@@ -36,7 +42,7 @@ public class UserDao {
     }
 
     public void add(final User user) throws SQLException {
-        jdbcContextWithStatementStrategy(new StatementStrategy() { // 익명 내부 클래스는 구현하는 인터페이스를 생성자처럼 이용해서 오브젝트로 만든다.
+        context.workWithStatementStrategy(new StatementStrategy() { // 익명 내부 클래스는 구현하는 인터페이스를 생성자처럼 이용해서 오브젝트로 만든다.
             @Override
             public PreparedStatement makPreparedStatement(Connection c) throws SQLException {
                 PreparedStatement ps = c.prepareStatement(
@@ -110,24 +116,6 @@ public class UserDao {
                 } catch (SQLException e) {
                 }
             }
-        }
-    }
-
-    public void jdbcContextWithStatementStrategy(StatementStrategy stmt) throws SQLException {
-        Connection c = null;
-        PreparedStatement ps = null;
-
-        try {
-            c = dataSource.getConnection();
-            ps = stmt.makPreparedStatement(c);
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            throw e;
-        } finally {
-            if (ps != null) { try { ps.close(); } catch(SQLException e) {} }
-            if (c != null) { try{ c.close(); } catch(SQLException e) {} }
-            ps.close();
-            c.close();
         }
     }
 }
