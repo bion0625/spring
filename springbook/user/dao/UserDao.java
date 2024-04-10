@@ -13,11 +13,7 @@ import springbook.user.domain.User;
 
 public class UserDao {
 
-    private JdbcContext context;
-
-    public void setJdbcContext(JdbcContext context) { // JdbcContext를 DI받도록 한다.
-        this.context = context;
-    }
+    private JdbcContext jdbcContext;
 
     private DataSource dataSource; // 인터페이스를 통해 오브젝트에 접근하므로 구체적인 클래스 정보를 알 필요가 없다.
 
@@ -27,12 +23,14 @@ public class UserDao {
         this.connectionMaker = connectionMaker;
     }
 
-    public void setDataSource(DataSource dataSource) {
-        this.dataSource = dataSource;
+    public void setDataSource(DataSource dataSource) throws SQLException { // 수정자 메소드이면서 JdbcContext에 대한 생성, DI 작업을 동시에 수행한다.
+        this.jdbcContext = new JdbcContext(); // JdbcContext 생성(ioc)
+        this.jdbcContext.setDataSource(dataSource); // 의존 오브젝트 주입(DI)
+        this.dataSource = dataSource; // 아직 JdbcContext를 적용하지 않은 메소드를 위해 저장해둔다.
     }
 
     public void deleteAll() throws SQLException {
-        context.workWithStatementStrategy(new StatementStrategy() { // DI 받은 JdbcContext의 컨텍스트 메소드를 사용하도록 변경한다.
+        jdbcContext.workWithStatementStrategy(new StatementStrategy() { // DI 받은 JdbcContext의 컨텍스트 메소드를 사용하도록 변경한다.
             @Override
             public PreparedStatement makPreparedStatement(Connection c) throws SQLException {
                 PreparedStatement ps = c.prepareStatement("delete from users");
@@ -42,7 +40,7 @@ public class UserDao {
     }
 
     public void add(final User user) throws SQLException {
-        context.workWithStatementStrategy(new StatementStrategy() { // 익명 내부 클래스는 구현하는 인터페이스를 생성자처럼 이용해서 오브젝트로 만든다.
+        jdbcContext.workWithStatementStrategy(new StatementStrategy() { // 익명 내부 클래스는 구현하는 인터페이스를 생성자처럼 이용해서 오브젝트로 만든다.
             @Override
             public PreparedStatement makPreparedStatement(Connection c) throws SQLException {
                 PreparedStatement ps = c.prepareStatement(
