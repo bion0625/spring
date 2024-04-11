@@ -30,10 +30,11 @@ public class UserDao {
     }
 
     public void deleteAll() throws SQLException {
-        executeSql("delete from users"); // 변하는 SQL 문장
+        this.jdbcContext.executeSql("delete from users"); // 변하는 SQL 문장
     }
 
     public void add(final User user) throws SQLException {
+        this.jdbcContext.executeSql("insert into users(id, name, password) values(?,?,?)", user.getId(), user.getName(), user.getPassword());
         jdbcContext.workWithStatementStrategy(new StatementStrategy() { // 익명 내부 클래스는 구현하는 인터페이스를 생성자처럼 이용해서 오브젝트로 만든다.
             @Override
             public PreparedStatement makPreparedStatement(Connection c) throws SQLException {
@@ -109,18 +110,5 @@ public class UserDao {
                 }
             }
         }
-    }
-
-    private void executeSql(final String query) throws SQLException {
-        this.jdbcContext.workWithStatementStrategy(
-            // 변하지 않는 콜백 클래스 정의와 오브젝트 생성
-            new StatementStrategy() { // DI 받은 JdbcContext의 컨텍스트 메소드를 사용하도록 변경한다.
-                @Override
-                public PreparedStatement makPreparedStatement(Connection c) throws SQLException {
-                    PreparedStatement ps = c.prepareStatement(query);
-                    return ps;
-                }
-            }
-        );
     }
 }

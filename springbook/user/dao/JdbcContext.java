@@ -29,5 +29,22 @@ public class JdbcContext {
         }
     }
 
+    public void executeSql(final String query, String... param) throws SQLException {
+        workWithStatementStrategy(
+            // 변하지 않는 콜백 클래스 정의와 오브젝트 생성
+            new StatementStrategy() { // DI 받은 JdbcContext의 컨텍스트 메소드를 사용하도록 변경한다.
+                @Override
+                public PreparedStatement makPreparedStatement(Connection c) throws SQLException {
+                    PreparedStatement ps = c.prepareStatement(query);
+                    if (param.length > 0) {
+                        for (int i = 1; i <= param.length; i++) {
+                            ps.setString(i, param[i-1]);
+                        }
+                    }
+                    return ps;
+                }
+            }
+        );
+    }
 
 }
