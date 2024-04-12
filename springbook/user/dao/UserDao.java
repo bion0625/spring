@@ -8,6 +8,8 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 
 import springbook.user.domain.User;
 
@@ -19,34 +21,25 @@ public class UserDao {
 
     private ConnectionMaker connectionMaker; // 인터페이스를 통해 오브젝트에 접근하므로 구체적인 클래스 정보를 알 필요가 없다.
 
+    private JdbcTemplate jdbcTemplate;
+
     public void setConnectionMaker(ConnectionMaker connectionMaker) {
         this.connectionMaker = connectionMaker;
     }
 
     public void setDataSource(DataSource dataSource) throws SQLException { // 수정자 메소드이면서 JdbcContext에 대한 생성, DI 작업을 동시에 수행한다.
         this.jdbcContext = new JdbcContext(); // JdbcContext 생성(ioc)
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
         this.jdbcContext.setDataSource(dataSource); // 의존 오브젝트 주입(DI)
         this.dataSource = dataSource; // 아직 JdbcContext를 적용하지 않은 메소드를 위해 저장해둔다.
     }
 
     public void deleteAll() throws SQLException {
-        this.jdbcContext.executeSql("delete from users"); // 변하는 SQL 문장
+        this.jdbcTemplate.update("delete from users");
     }
 
     public void add(final User user) throws SQLException {
-        this.jdbcContext.executeSql("insert into users(id, name, password) values(?,?,?)", user.getId(), user.getName(), user.getPassword());
-        jdbcContext.workWithStatementStrategy(new StatementStrategy() { // 익명 내부 클래스는 구현하는 인터페이스를 생성자처럼 이용해서 오브젝트로 만든다.
-            @Override
-            public PreparedStatement makPreparedStatement(Connection c) throws SQLException {
-                PreparedStatement ps = c.prepareStatement(
-                "insert into users(id, name, password) values(?,?,?)");
-                ps.setString(1, user.getId());
-                ps.setString(2, user.getName());
-                ps.setString(3, user.getPassword());
-
-                return ps;
-            }
-        });
+        this.jdbcTemplate.update("insert into users(id, name, password) values(?,?,?)", user.getId(), user.getName(), user.getPassword());
     }
 
     public User get(String id) throws SQLException {
