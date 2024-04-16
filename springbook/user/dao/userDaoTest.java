@@ -46,7 +46,7 @@ public class UserDaoTest {
     }
 
     @Test // JUnit에게 테스트용 메소드임을 알려준다.
-    public void addAndGet() throws SQLException { // JUnit 메소드는 반드시 public으로 선언되어야 한다.
+    public void addAndGet() { // JUnit 메소드는 반드시 public으로 선언되어야 한다.
 
         dao.deleteAll();
         assertThat(dao.getCount(), is(0));
@@ -65,7 +65,7 @@ public class UserDaoTest {
     }
     
     @Test
-    public void count() throws SQLException {
+    public void count() {
 
         dao.deleteAll();
         assertThat(dao.getCount(), is(0));
@@ -81,7 +81,7 @@ public class UserDaoTest {
     }
 
     @Test(expected = EmptyResultDataAccessException.class) // 테스트 중에 발생할 것으로 기대하는 예외 클래스를 지정해준다.
-    public void getUserFailure() throws SQLException {
+    public void getUserFailure() {
         dao.deleteAll();
         assertThat(dao.getCount(), is(0));
 
@@ -89,7 +89,7 @@ public class UserDaoTest {
     }
 
     @Test
-    public void getAll() throws SQLException {
+    public void getAll() {
         dao.deleteAll();
 
         List<User> users0 = dao.getAll();

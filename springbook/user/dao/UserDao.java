@@ -6,10 +6,12 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
 import springbook.user.domain.User;
+import springbook.user.exception.DuplicateUserIdException;
 
 public class UserDao {
 
@@ -27,32 +29,38 @@ public class UserDao {
             }
         };
 
-    public void setDataSource(DataSource dataSource) throws SQLException { // 수정자 메소드이면서 JdbcContext에 대한 생성, DI 작업을 동시에 수행한다.
+    public void setDataSource(DataSource dataSource) { // 수정자 메소드이면서 JdbcContext에 대한 생성, DI 작업을 동시에 수행한다.
         this.jdbcTemplate = new JdbcTemplate(dataSource); // DataSource 오브젝트는 JdbcTemplate을 만든 후에는 사용하지 않으니 저장해두지 않아도 된다.
     }
 
-    public void deleteAll() throws SQLException {
+    public void deleteAll() {
         this.jdbcTemplate.update("delete from users");
     }
 
-    public void add(final User user) throws SQLException {
-        this.jdbcTemplate.update("insert into users(id, name, password) values(?,?,?)", user.getId(), user.getName(), user.getPassword());
+    public void add(final User user) throws DuplicateKeyException { // 애플리케이션 레벨의 체크 예외
+        try {
+            // JdbcTemplate을 이용해 User를 add하는 코드
+            this.jdbcTemplate.update("insert into users(id, name, password) values(?,?,?)", user.getId(), user.getName(), user.getPassword());
+        } catch (DuplicateKeyException e) {
+            // 로그를 남기는 등의 필요한 작업
+            throw new DuplicateUserIdException(e); // 예외를 전환할 때는 원인이 되는 예외를 중첩하는 것이 좋다.
+        }
     }
 
-    public User get(String id) throws SQLException {
+    public User get(String id) {
         return this.jdbcTemplate.queryForObject(
             "select * from users where id = ?", 
             new Object[] {id}, // SQL에 바인딩할 파라미터 값. 가변인자 대신 배열을 사용한다.
             this.userMapper);
     }
 
-    public List<User> getAll() throws SQLException {
+    public List<User> getAll() {
         return this.jdbcTemplate.query(
             "select * from users order by id", 
             this.userMapper);
     }
 
-    public int getCount() throws SQLException {
+    public int getCount() {
         return this.jdbcTemplate.queryForInt("select count(*) from users");
     }
 }
