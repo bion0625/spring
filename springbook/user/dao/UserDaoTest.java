@@ -3,10 +3,16 @@ package springbook.user.dao;
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 
+import java.sql.SQLException;
 import java.util.List;
 
+import javax.sql.DataSource;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator;
+import org.springframework.jdbc.support.SQLExceptionTranslator;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.junit.Before;
@@ -20,8 +26,8 @@ import springbook.user.domain.User;
 @ContextConfiguration(locations = "/test-applicationContext.xml")
 public class UserDaoTest {
 
-    @Autowired
-    UserDao dao;
+    @Autowired UserDao dao; // UserDaoJdbc로 변경해야 하나?
+    @Autowired DataSource dataSource;
 
     User user1;
     User user2;
@@ -117,5 +123,30 @@ public class UserDaoTest {
         assertThat(user1.getId(), is(user2.getId()));
         assertThat(user1.getName(), is(user2.getName()));
         assertThat(user1.getPassword(), is(user2.getPassword()));
+    }
+
+    @Test(expected = DuplicateKeyException.class)
+    public void duplicateKey() {
+        dao.deleteAll();
+
+        dao.add(user1);
+        dao.add(user1); // 강제로 같은 사용자를 두 번 등록한다. 여기서 예외가 발생해야 한다.
+    }
+
+    @Test
+    public void sqlExceptionTranslate() {
+        dao.deleteAll();
+
+        try {
+            dao.add(user1);
+            dao.add(user1);
+        } catch (DuplicateKeyException ex) {
+            SQLException sqlEx = (SQLException)ex.getRootCause();
+            SQLExceptionTranslator set = // 코드를 이용한 SQLException의 전환
+                new SQLErrorCodeSQLExceptionTranslator(this.dataSource);
+
+            assertThat(set.translate(null, null, sqlEx), // 에러 메시지 만들 때 사용하는 정보이므로 null로 넣어도 된다.
+                is(DuplicateKeyException.class));
+        }
     }
 }

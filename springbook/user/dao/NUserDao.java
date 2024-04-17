@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 import springbook.user.domain.User;
 
-public class NUserDao extends UserDao {
+public class NUserDao extends UserDaoJdbc {
 
     public Connection getConnection() throws ClassNotFoundException, SQLException{
         Class.forName("com.mysql.jdbc.Driver");
