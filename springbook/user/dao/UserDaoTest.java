@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.RunWith;
 
+import springbook.user.domain.Level;
 import springbook.user.domain.User;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -45,9 +46,9 @@ public class UserDaoTest {
         */
         System.out.println(this);
 
-        user1 = new User("gyumee", "박성철", "springno1");
-        user2 = new User("leegw700", "이길원", "springno2");
-        user3 = new User("bumjin", "박범진", "springno3");
+        user1 = new User("gyumee", "박성철", "springno1", Level.BASIC, 1, 0);
+        user2 = new User("leegw700", "이길원", "springno2", Level.BASIC, 1, 0);
+        user3 = new User("bumjin", "박범진", "springno3", Level.BASIC, 1, 0);
     }
 
     @Test // JUnit에게 테스트용 메소드임을 알려준다.
@@ -61,12 +62,10 @@ public class UserDaoTest {
         assertThat(dao.getCount(), is(2));
 
         User userget1 = dao.get(user1.getId()); // 첫 번째 User의 id로 get()을 실행하면 첫 번째 User의 값을 가진 오브젝트를 돌려주는지 확인한다.
-        assertThat(userget1.getName(), is(user1.getName()));
-        assertThat(userget1.getPassword(), is(user1.getPassword()));
+        checkSameUser(userget1, user1);
 
         User userget2 = dao.get(user2.getId()); // 두 번째 User에 대해서도 같은 방법으로 검증한다.
-        assertThat(userget2.getName(), is(user2.getName()));
-        assertThat(userget2.getPassword(), is(user2.getPassword()));
+        checkSameUser(userget2, user2);
     }
     
     @Test
@@ -119,12 +118,6 @@ public class UserDaoTest {
         checkSameUser(user2, users3.get(2));
     }
 
-    private void checkSameUser(User user1, User user2) { // User 오브젝트의 내용을 비교하는 검증 코드. 테스트에서 반복적으로 사용되므로 분리해놓았다.
-        assertThat(user1.getId(), is(user2.getId()));
-        assertThat(user1.getName(), is(user2.getName()));
-        assertThat(user1.getPassword(), is(user2.getPassword()));
-    }
-
     @Test(expected = DuplicateKeyException.class)
     public void duplicateKey() {
         dao.deleteAll();
@@ -148,5 +141,14 @@ public class UserDaoTest {
             assertThat(set.translate(null, null, sqlEx), // 에러 메시지 만들 때 사용하는 정보이므로 null로 넣어도 된다.
                 is(DuplicateKeyException.class));
         }
+    }
+
+    private void checkSameUser(User user1, User user2) { // User 오브젝트의 내용을 비교하는 검증 코드. 테스트에서 반복적으로 사용되므로 분리해놓았다.
+        assertThat(user1.getId(), is(user2.getId()));
+        assertThat(user1.getName(), is(user2.getName()));
+        assertThat(user1.getPassword(), is(user2.getPassword()));
+        assertThat(user1.getLevel(), is(user2.getLevel()));
+        assertThat(user1.getLogin(), is(user2.getLogin()));
+        assertThat(user1.getRecommend(), is(user2.getRecommend()));
     }
 }
