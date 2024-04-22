@@ -1,9 +1,12 @@
 package springbook.user.service;
 
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 import java.util.List;
+
+import javax.sql.DataSource;
 
 import org.junit.Before;
 
@@ -30,6 +33,9 @@ public class UserServiceTest {
     UserDao userDao;
 
     @Autowired
+    DataSource datasource;
+
+    @Autowired
     UserLevelUpgradePolicy userService;
 
     List<User> users; // 테스트 픽스처
@@ -52,7 +58,7 @@ public class UserServiceTest {
     // }
 
     @Test
-    public void upgradeLevels() {
+    public void upgradeLevels() throws Exception {
         userDao.deleteAll();
         for (User user : users) userDao.add(user);
 
@@ -95,5 +101,42 @@ public class UserServiceTest {
 
         assertThat(userWithLevelRead.getLevel(), is(userWithLevel.getLevel()));
         assertThat(userWithoutLevelRead.getLevel(), is(Level.BASIC));
+    }
+
+    static class TestUserService extends UserService {
+        private String id;
+
+        public TestUserService(String id) { // 예외를 발생시킬 User 오브젝트의 id를 지정할 수 있게 만든다.
+            this.id = id;
+        }
+
+        public void upgradeLevel(User user) { // UserService의 메소드를 오버라이드한다.
+            // 지정된 id의 user 오브젝트가 발견되면 예외를 던져서 작업을 강제로 중단한다.
+            if (user.getId().equals(this.id)) throw new TestUserServiceException();
+            super.upgradeLevel(user);
+        }
+    }
+
+    static class TestUserServiceException extends RuntimeException {}
+
+    @Test
+    public void upgradeAllOrNothing() throws Exception {
+        // 예외를 발생시킬 네 번째 사용자의 id를 넣어서 테스트용 UserService 대역 오브젝트를 생성한다.
+        UserService testUserService = new TestUserService(users.get(3).getId());
+        testUserService.setUserDao(this.userDao); // userDao를 수동 DI 해준다.
+        testUserService.setDataSource(this.datasource);
+
+        userDao.deleteAll();
+        for (User user : users) userDao.add(user);
+
+        try {
+            // testUserService는 업그레이드 작업 중에 예외가 발생해야 한다. 정상 종료라면 문제가 있으니 실패
+            testUserService.upgradeLevels();
+            fail("TestUserServiceException expected");
+        } catch (TestUserServiceException e) { // testUserService가 던져주는 예외를 잡아서 계속 진행되도록 한다. 그 외의 예외라면 테스트 실패
+        }
+
+        // 예외가 발생하기 전에 레벨 변경이 있었던 사용자의 레벨이 처음 상태로 바뀌었나 확인
+        checkLevelUpgraded(users.get(1), false);
     }
 }
