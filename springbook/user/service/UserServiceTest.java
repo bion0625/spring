@@ -6,8 +6,6 @@ import static org.junit.Assert.fail;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.sql.DataSource;
-
 import org.junit.Before;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -17,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import springbook.user.dao.UserDao;
 import springbook.user.domain.Level;
@@ -33,10 +32,10 @@ public class UserServiceTest {
     UserDao userDao;
 
     @Autowired
-    DataSource datasource;
+    UserLevelUpgradePolicy userService;
 
     @Autowired
-    UserLevelUpgradePolicy userService;
+    PlatformTransactionManager transactionManager;
 
     List<User> users; // 테스트 픽스처
 
@@ -123,8 +122,9 @@ public class UserServiceTest {
     public void upgradeAllOrNothing() throws Exception {
         // 예외를 발생시킬 네 번째 사용자의 id를 넣어서 테스트용 UserService 대역 오브젝트를 생성한다.
         UserService testUserService = new TestUserService(users.get(3).getId());
-        testUserService.setUserDao(this.userDao); // userDao를 수동 DI 해준다.
-        testUserService.setDataSource(this.datasource);
+        // userService 빈의 프로퍼티 설정과 동일한 수동 DI
+        testUserService.setUserDao(this.userDao);
+        testUserService.setTransactionManager(transactionManager);
 
         userDao.deleteAll();
         for (User user : users) userDao.add(user);

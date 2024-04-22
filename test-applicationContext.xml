@@ -15,8 +15,11 @@
     <bean id="dao" class="springbook.user.dao.UserDaoJdbc">
         <property name="dataSource" ref="dataSource"/>
     </bean>
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
     <bean id="userService" class="springbook.user.service.UserService">
         <property name="userDao" ref="dao"/>
-        <property name="dataSource" ref="dataSource"/>
+        <property name="transactionManager" ref="transactionManager"/>
     </bean>
 </beans>
