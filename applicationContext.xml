@@ -5,17 +5,25 @@
         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
     <bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
         <property name="driverClass" value="com.mysql.jdbc.Driver"/>
-        <property name="url" value="jdbc:mysql://localhost:3306/mysql"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/testdb"/>
         <property name="username" value="root"/>
         <property name="password" value="admin"/>
     </bean>
-    <bean id="userDao" class="springbook.user.dao.UserDao">
+    <bean id="userDao" class="springbook.user.dao.UserDaoJdbc">
         <property name="dataSource" ref="dataSource"/>
     </bean>
-    <bean id="dao" class="springbook.user.dao.UserDao">
+    <bean id="dao" class="springbook.user.dao.UserDaoJdbc">
         <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+        <property name="host" value="mail.server.com"/>
     </bean>
     <bean id="userService" class="springbook.user.service.UserService">
         <property name="userDao" ref="dao"/>
+        <property name="transactionManager" ref="transactionManager"/>
+        <property name="mailSender" ref="mailSender"/>
     </bean>
 </beans>

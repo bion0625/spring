@@ -2,6 +2,8 @@ package springbook.user.service;
 
 import java.util.List;
 
+import org.springframework.mail.MailSender;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
@@ -10,8 +12,10 @@ import springbook.user.dao.UserDao;
 import springbook.user.domain.Level;
 import springbook.user.domain.User;
 
-public class UserService implements UserLevelUpgradePolicy {
+public class UserService {
     UserDao userDao;
+
+    MailSender mailSender;
 
     PlatformTransactionManager transactionManager;
 
@@ -27,7 +31,11 @@ public class UserService implements UserLevelUpgradePolicy {
         this.userDao = userDao;
     }
 
-    public void upgradeLevels() throws Exception {
+    public void setMailSender(MailSender mailSender) {
+        this.mailSender = mailSender;
+    }
+
+    protected void upgradeLevels() throws Exception {
         // 트랜젝션 시작
         // DI 받은 트렌젝션 매니저를 공유해서 사용한다. 멀티 스레드 환경에서도 안전하다.
         TransactionStatus status = transactionManager.getTransaction(new DefaultTransactionDefinition());
@@ -47,7 +55,7 @@ public class UserService implements UserLevelUpgradePolicy {
         
     }
 
-    public boolean canUpgradeLevel(User user) {
+    private boolean canUpgradeLevel(User user) {
         Level currentLevel = user.getLevel();
         // 레벨 별로 구분해서 로직을 판단한다.
         switch (currentLevel) {
@@ -62,13 +70,25 @@ public class UserService implements UserLevelUpgradePolicy {
         }
     }
 
-    public void upgradeLevel(User user) {
+    protected void upgradeLevel(User user) {
         user.upgradeLevel();
         userDao.update(user);
+        sendUpgradeEMail(user);
     }
 
     public void add(User user) {
         if (user.getLevel() == null) user.setLevel(Level.BASIC);
         userDao.add(user);
+    }
+
+    private void sendUpgradeEMail(User user) {
+        // MailMessage 인터페이스의 구현 클래스 오브젝트를 만들어 메일 내용을 작성한다.
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setTo(user.getEmail());
+        mailMessage.setFrom("useradmin@ksug.org");
+        mailMessage.setSubject("Upgrade 안내");
+        mailMessage.setText("사용자님의 등급이 " + user.getLevel().name());
+
+        this.mailSender.send(mailMessage);
     }
 }
