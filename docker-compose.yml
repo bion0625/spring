@@ -4,7 +4,7 @@ services:
     image: mysql:8.0
     container_name: testdb
     ports:
-      - 3306:3306 # HOST:CONTAINER
+      - 3307:3306 # HOST:CONTAINER
     environment:
       MYSQL_DATABASE: testdb
       MYSQL_ROOT_PASSWORD: admin
