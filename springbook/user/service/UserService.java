@@ -40,19 +40,23 @@ public class UserService {
         // DI 받은 트렌젝션 매니저를 공유해서 사용한다. 멀티 스레드 환경에서도 안전하다.
         TransactionStatus status = transactionManager.getTransaction(new DefaultTransactionDefinition());
         try {
-            // 트랜젝션 안에서 진행되는 작업
-            List<User> users = userDao.getAll();
-            for (User user : users) {
-                if(canUpgradeLevel(user)) {
-                    upgradeLevel(user);
-                }
-            }
+            upgradeLevelsInternal();
             transactionManager.commit(status); // 트랜젝션 커밋
         } catch (Exception e) { // 예외가 발생하면 롤백한다.
             transactionManager.rollback(status); // 트랜젝션 커밋
             throw e;
         }
         
+    }
+
+    // 분리된 비즈니스 로직 코드. 트랜젝션을 작용하기 전과 동일하다.
+    private void upgradeLevelsInternal() {
+        List<User> users = userDao.getAll();
+        for (User user : users) {
+            if(canUpgradeLevel(user)) {
+                upgradeLevel(user);
+            }
+        }
     }
 
     private boolean canUpgradeLevel(User user) {
