@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailSender;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -61,10 +62,16 @@ public class UserServiceTest {
     // }
 
     @Test
+    @DirtiesContext
     public void upgradeLevels() throws Exception {
         userDao.deleteAll();
         for (User user : users) userDao.add(user);
 
+        // 메일 발송 결과를 테스트할 수 있도록 목 오브젝트를 만들어 userService의 의존오브젝트로 주입해준다.
+        MockMailSender mockMailSender = new MockMailSender();
+        userService.setMailSender(mockMailSender);
+
+        // 업그레이드 테스트 메일 발송이 일어나면 MockMailSender 오브젝트의 리스트이에 그 결과가 저장된다.
         userService.upgradeLevels();
 
         checkLevelUpgraded(users.get(0), false);
@@ -72,6 +79,12 @@ public class UserServiceTest {
         checkLevelUpgraded(users.get(2), false);
         checkLevelUpgraded(users.get(3), true);
         checkLevelUpgraded(users.get(4), false);
+
+        // 목 오브젝트에 저장된 메일 수신자 목록을 가져와 업그레이드 대상과 일치하는지 확인한다.
+        List<String> reuqest = mockMailSender.getRequests();
+        assertThat(reuqest.size(), is(2));
+        assertThat(reuqest.get(0), is(users.get(1).getEmail()));
+        assertThat(reuqest.get(1), is(users.get(3).getEmail()));
     }
 
     private void checkLevelUpgraded(User user, boolean upgraded) { // 어떤 레벨로 바뀔 것인가가 아니라, 다음 레벨로 업그레이드될 것인가 아닌가를 지정한다.
