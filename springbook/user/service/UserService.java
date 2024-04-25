@@ -3,7 +3,7 @@ package springbook.user.service;
 import java.util.List;
 
 import org.springframework.mail.MailSender;
-// import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
@@ -83,12 +83,12 @@ public class UserService {
 
     private void sendUpgradeEMail(User user) {
         // MailMessage 인터페이스의 구현 클래스 오브젝트를 만들어 메일 내용을 작성한다.
-        // SimpleMailMessage mailMessage = new SimpleMailMessage();
-        // mailMessage.setTo(user.getEmail());
-        // mailMessage.setFrom("useradmin@ksug.org");
-        // mailMessage.setSubject("Upgrade 안내");
-        // mailMessage.setText("사용자님의 등급이 " + user.getLevel().name());
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setTo(user.getEmail());
+        mailMessage.setFrom("useradmin@ksug.org");
+        mailMessage.setSubject("Upgrade 안내");
+        mailMessage.setText(String.format("사용자님의 등급이 %s", user.getLevel().name()));
 
-        // this.mailSender.send(mailMessage);
+        this.mailSender.send(mailMessage);
     }
 }
