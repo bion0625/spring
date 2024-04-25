@@ -23,8 +23,8 @@ import springbook.user.dao.UserDao;
 import springbook.user.domain.Level;
 import springbook.user.domain.User;
 
-import static springbook.user.service.UserService.MIN_LOGCOUNT_FOR_SILVER;
-import static springbook.user.service.UserService.MIN_RECCOMEND_FOR_GOLD;
+import static springbook.user.service.UserServiceImpl.MIN_LOGCOUNT_FOR_SILVER;
+import static springbook.user.service.UserServiceImpl.MIN_RECCOMEND_FOR_GOLD;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "/test-applicationContext.xml")
@@ -33,8 +33,9 @@ public class UserServiceTest {
     @Autowired
     UserDao userDao;
 
-    @Autowired
-    UserService userService;
+    @Autowired UserService userService;
+
+    @Autowired UserServiceImpl userServiceImpl;
 
     @Autowired
     PlatformTransactionManager transactionManager;
@@ -69,7 +70,7 @@ public class UserServiceTest {
 
         // 메일 발송 결과를 테스트할 수 있도록 목 오브젝트를 만들어 userService의 의존오브젝트로 주입해준다.
         MockMailSender mockMailSender = new MockMailSender();
-        userService.setMailSender(mockMailSender);
+        userServiceImpl.setMailSender(mockMailSender);
 
         // 업그레이드 테스트 메일 발송이 일어나면 MockMailSender 오브젝트의 리스트이에 그 결과가 저장된다.
         userService.upgradeLevels();
@@ -119,7 +120,7 @@ public class UserServiceTest {
         assertThat(userWithoutLevelRead.getLevel(), is(Level.BASIC));
     }
 
-    static class TestUserService extends UserService {
+    static class TestUserService extends UserServiceImpl {
         private String id;
 
         public TestUserService(String id) { // 예외를 발생시킬 User 오브젝트의 id를 지정할 수 있게 만든다.
@@ -138,18 +139,22 @@ public class UserServiceTest {
     @Test
     public void upgradeAllOrNothing() throws Exception {
         // 예외를 발생시킬 네 번째 사용자의 id를 넣어서 테스트용 UserService 대역 오브젝트를 생성한다.
-        UserService testUserService = new TestUserService(users.get(3).getId());
+        UserServiceImpl testUserService = new TestUserService(users.get(3).getId());
         // userService 빈의 프로퍼티 설정과 동일한 수동 DI
         testUserService.setUserDao(this.userDao);
-        testUserService.setTransactionManager(transactionManager);
         testUserService.setMailSender(mailSender);
+
+        // 트랜젝션 기능을 분리한 UserServiceTx는 예외 발생용으로 수정할 필요가 없으니 그대로 사용한다.
+        UserServiceTx txUserService = new UserServiceTx();
+        txUserService.setTransactionManager(transactionManager);
+        txUserService.setUserService(testUserService);
 
         userDao.deleteAll();
         for (User user : users) userDao.add(user);
 
         try {
-            // testUserService는 업그레이드 작업 중에 예외가 발생해야 한다. 정상 종료라면 문제가 있으니 실패
-            testUserService.upgradeLevels();
+            // 트랜젝션 기능을 분리한 오브젝트를 통해 예외 발생용 TestUserService가 호출되게 해야 한다.
+            txUserService.upgradeLevels();
             fail("TestUserServiceException expected");
         } catch (TestUserServiceException e) { // testUserService가 던져주는 예외를 잡아서 계속 진행되도록 한다. 그 외의 예외라면 테스트 실패
         }
