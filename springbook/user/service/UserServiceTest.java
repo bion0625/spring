@@ -13,6 +13,7 @@ import static org.hamcrest.CoreMatchers.is;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.MailSender;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -32,10 +33,13 @@ public class UserServiceTest {
     UserDao userDao;
 
     @Autowired
-    UserLevelUpgradePolicy userService;
+    UserService userService;
 
     @Autowired
     PlatformTransactionManager transactionManager;
+
+    @Autowired
+    MailSender mailSender;
 
     List<User> users; // 테스트 픽스처
 
@@ -43,11 +47,11 @@ public class UserServiceTest {
     public void setUp() {
         users = Arrays.asList( // 배열을 리스트로 만들어주는 편리한 메소드. 배열을 가변인자로 넣어주면 더욱 편리하다.
             // 테스트에서는 경계값을 사용하는 것이 좋다.
-            new User("bumjin", "박범진", "p1", Level.BASIC, MIN_LOGCOUNT_FOR_SILVER-1, 0),
-            new User("joytouch", "강명성", "p2", Level.BASIC, MIN_LOGCOUNT_FOR_SILVER, 0),
-            new User("erwins", "신승한", "p3", Level.SILVER, 60, MIN_RECCOMEND_FOR_GOLD-1),
-            new User("madnite1", "이상호", "p4", Level.SILVER, 60, MIN_RECCOMEND_FOR_GOLD),
-            new User("green", "오민규", "p5", Level.GOLD, 100, Integer.MAX_VALUE)
+            new User("bumjin", "박범진", "p1", "test01@test.com", Level.BASIC, MIN_LOGCOUNT_FOR_SILVER-1, 0),
+            new User("joytouch", "강명성", "p2", "test02@test.com", Level.BASIC, MIN_LOGCOUNT_FOR_SILVER, 0),
+            new User("erwins", "신승한", "p3", "test03@test.com", Level.SILVER, 60, MIN_RECCOMEND_FOR_GOLD-1),
+            new User("madnite1", "이상호", "p4", "test04@test.com", Level.SILVER, 60, MIN_RECCOMEND_FOR_GOLD),
+            new User("green", "오민규", "p5", "test05@test.com", Level.GOLD, 100, Integer.MAX_VALUE)
         );
     }
 
@@ -109,7 +113,7 @@ public class UserServiceTest {
             this.id = id;
         }
 
-        public void upgradeLevel(User user) { // UserService의 메소드를 오버라이드한다.
+        protected void upgradeLevel(User user) { // UserService의 메소드를 오버라이드한다.
             // 지정된 id의 user 오브젝트가 발견되면 예외를 던져서 작업을 강제로 중단한다.
             if (user.getId().equals(this.id)) throw new TestUserServiceException();
             super.upgradeLevel(user);
@@ -125,6 +129,7 @@ public class UserServiceTest {
         // userService 빈의 프로퍼티 설정과 동일한 수동 DI
         testUserService.setUserDao(this.userDao);
         testUserService.setTransactionManager(transactionManager);
+        testUserService.setMailSender(mailSender);
 
         userDao.deleteAll();
         for (User user : users) userDao.add(user);

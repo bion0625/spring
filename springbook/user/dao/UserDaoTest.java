@@ -46,9 +46,9 @@ public class UserDaoTest {
         */
         System.out.println(this);
 
-        user1 = new User("gyumee", "박성철", "springno1", Level.BASIC, 1, 0);
-        user2 = new User("leegw700", "이길원", "springno2", Level.BASIC, 1, 0);
-        user3 = new User("bumjin", "박범진", "springno3", Level.BASIC, 1, 0);
+        user1 = new User("gyumee", "박성철", "springno1", "test01@test.com", Level.BASIC, 1, 0);
+        user2 = new User("leegw700", "이길원", "springno2", "test02@test.com", Level.BASIC, 1, 0);
+        user3 = new User("bumjin", "박범진", "springno3", "test03@test.com", Level.BASIC, 1, 0);
     }
 
     @Test // JUnit에게 테스트용 메소드임을 알려준다.

@@ -18,8 +18,10 @@
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource"/>
     </bean>
+    <bean id="mailSender" class="springbook.user.service.DummyMailSender"/>
     <bean id="userService" class="springbook.user.service.UserService">
         <property name="userDao" ref="dao"/>
         <property name="transactionManager" ref="transactionManager"/>
+        <property name="mailSender" ref="mailSender"/>
     </bean>
 </beans>
