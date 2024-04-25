@@ -64,9 +64,7 @@ public class UserService {
             case GOLD:return false;
             // 현재 로직에서 다룰 수 없는 레벨이 주어지면 예외를 발생시킨다.
             // 새로운 레벨이 추가되고 로직을 수정하지 않으면 에러가 나서 확인할 수 있다.
-            // java.lang.IllegalStateException: Failed to load ApplicationContext 오류 때문에 변경: 원인 추후 확인
-            // default: throw new IllegalArgumentException("Unknown Level: " + currentLevel);
-            default: return false;
+            default: throw new IllegalArgumentException(String.format("Unknown Level: %s", currentLevel));
         }
     }
 
