@@ -3,6 +3,7 @@ package springbook.user.service;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -62,30 +63,72 @@ public class UserServiceTest {
     //     assertThat(this.userService, is(notNullValue()));
     // }
 
+    static class MockUserDao implements UserDao {
+        private List<User> users = new ArrayList<>(); // 레벨 업그레이드 후보 User 오브젝트 목록
+        private List<User> updated = new ArrayList<>(); // 업그레이드 대상 오브젝트를 저장해둘 목록
+
+        public MockUserDao(List<User> users) {
+            this.users = users;
+        }
+
+        public List<User> getUpdated() {
+            return this.updated;
+        }
+
+        @Override
+        public List<User> getAll() { // 스텁 기능 제공
+            return this.users;
+        }
+
+        @Override
+        public void update(User user) { // 목 오브젝트 기능 제공
+            this.updated.add(user);
+        }
+
+        // 테스트에 사용되지 않는 메소드
+        @Override
+        public void deleteAll() {throw new UnsupportedOperationException();};
+        @Override
+        public void add(User user) {throw new UnsupportedOperationException();};
+        @Override
+        public User get(String id) {throw new UnsupportedOperationException();};
+        @Override
+        public int getCount() {throw new UnsupportedOperationException();};
+        
+    }
+
     @Test
     @DirtiesContext
     public void upgradeLevels() throws Exception {
-        userDao.deleteAll();
-        for (User user : users) userDao.add(user);
+        // 고립된 테스트에서는 테스트 대상 오브젝트를 직접 설정하면 된다.
+        UserServiceImpl userServiceImpl = new UserServiceImpl();
 
-        // 메일 발송 결과를 테스트할 수 있도록 목 오브젝트를 만들어 userService의 의존오브젝트로 주입해준다.
+        // 목 오브젝트로 만든 userDao를 직접 DI 해준다.
+        MockUserDao mockUserDao = new MockUserDao(users);
+        userServiceImpl.setUserDao(mockUserDao);
+
         MockMailSender mockMailSender = new MockMailSender();
         userServiceImpl.setMailSender(mockMailSender);
 
-        // 업그레이드 테스트 메일 발송이 일어나면 MockMailSender 오브젝트의 리스트이에 그 결과가 저장된다.
-        userService.upgradeLevels();
+        userServiceImpl.upgradeLevels();
 
-        checkLevelUpgraded(users.get(0), false);
-        checkLevelUpgraded(users.get(1), true);
-        checkLevelUpgraded(users.get(2), false);
-        checkLevelUpgraded(users.get(3), true);
-        checkLevelUpgraded(users.get(4), false);
+        // MockUserDao로부터 업데이트 결과를 가져온다.
+        List<User> updated = mockUserDao.getUpdated();
+        // 업데이트 횟수와 정보를 확인한다.
+        assertThat(updated.size(), is(2));
+        checkUserAndLevel(updated.get(0), "joytouch", Level.SILVER);
+        checkUserAndLevel(updated.get(1), "madnite1", Level.GOLD);
 
-        // 목 오브젝트에 저장된 메일 수신자 목록을 가져와 업그레이드 대상과 일치하는지 확인한다.
         List<String> reuqest = mockMailSender.getRequests();
         assertThat(reuqest.size(), is(2));
         assertThat(reuqest.get(0), is(users.get(1).getEmail()));
         assertThat(reuqest.get(1), is(users.get(3).getEmail()));
+    }
+
+    // id와 level을 확인하는 간단한 메소드
+    private void checkUserAndLevel(User updated, String expectedId, Level expectedLevel) {
+        assertThat(updated.getId(), is(expectedId));
+        assertThat(updated.getLevel(), is(expectedLevel));
     }
 
     private void checkLevelUpgraded(User user, boolean upgraded) { // 어떤 레벨로 바뀔 것인가가 아니라, 다음 레벨로 업그레이드될 것인가 아닌가를 지정한다.
