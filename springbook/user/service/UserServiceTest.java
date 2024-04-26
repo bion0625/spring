@@ -2,6 +2,11 @@ package springbook.user.service;
 
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.any;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,8 +18,10 @@ import static org.hamcrest.CoreMatchers.is;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailSender;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -142,6 +149,42 @@ public class UserServiceTest {
             assertThat(userUpdate.getLevel(), is(user.getLevel()));
         }
 
+    }
+
+    // Java9 이후부터는 reflection API 관련 기능에 제한 이슈 오류코드 (mock 관련)
+    // Caused by: java.lang.reflect.InaccessibleObjectException: Unable to make protected final java.lang.Class java.lang.ClassLoader.defineClass(java.lang.String,byte[],int,int,java.security.ProtectionDomain) throws java.lang.ClassFormatError accessible: module java.base does not "opens java.lang" to unnamed module @2a18f23c at java.base/java.lang.reflect.AccessibleObject.checkCanSetAccessible(AccessibleObject.java:354) at java.base/java.lang.reflect.AccessibleObject.checkCanSetAccessible(AccessibleObject.java:297) at java.base/java.lang.reflect.Method.checkCanSetAccessible(Method.java:199) at java.base/java.lang.reflect.Method.setAccessible(Method.java:193) at net.sf.cglib.core.ReflectUtils$2.run(ReflectUtils.java:56) at java.base/java.security.AccessController.doPrivileged(AccessController.java:318) at net.sf.cglib.core.ReflectUtils.<clinit>(ReflectUtils.java:46)
+    // 위 이슈 테스트 관련 아래 확인: vscode 테스트 관련 세팅
+    // "java.test.config": {
+    //     "vmArgs": ["--add-opens=java.base/java.lang=ALL-UNNAMED"]
+    // }
+    @Test
+    public void mockUpgradeLevels() {
+        UserServiceImpl userServiceImpl = new UserServiceImpl();
+
+        // 다이내믹한 목 오브젝트 생성과 메소드의 리턴 값 설정, 그리고 DI까지 세 줄이면 충분하다.
+        UserDao mockUserDao = mock(UserDao.class);
+        when(mockUserDao.getAll()).thenReturn(this.users);
+        userServiceImpl.setUserDao(mockUserDao);
+
+        // 리턴 값이 없는 메소드를 가진 목 오브젝트는 더욱 간단하게 만들 수 있다.
+        MailSender mockMailSender = mock(MailSender.class);
+        userServiceImpl.setMailSender(mockMailSender);
+
+        userServiceImpl.upgradeLevels();
+
+        // 목 오브젝트가 제공하는 검증 기능을 통해서 어떤 메소드가 몇 번 호출됐는지, 파라미터는 무엇인지 확인할 수 있다.
+        verify(mockUserDao, times(2)).update(any(User.class));
+        verify(mockUserDao).update(users.get(1));
+        assertThat(users.get(1).getLevel(), is(Level.SILVER));
+        verify(mockUserDao).update(users.get(3));
+        assertThat(users.get(3).getLevel(), is(Level.GOLD));
+
+        ArgumentCaptor<SimpleMailMessage> mailMessageArg = ArgumentCaptor.forClass(SimpleMailMessage.class);
+        // 파라미터를 정미랗게 검사하기 위해 캡쳐할 수도 있다.
+        verify(mockMailSender, times(2)).send(mailMessageArg.capture());
+        List<SimpleMailMessage> mailMessages = mailMessageArg.getAllValues();
+        assertThat(mailMessages.get(0).getTo()[0], is(users.get(1).getEmail()));
+        assertThat(mailMessages.get(1).getTo()[0], is(users.get(3).getEmail()));
     }
 
     @Test
