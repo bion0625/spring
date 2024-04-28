@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.any;
 
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -230,17 +231,23 @@ public class UserServiceTest {
         testUserService.setUserDao(this.userDao);
         testUserService.setMailSender(mailSender);
 
-        // 트랜젝션 기능을 분리한 UserServiceTx는 예외 발생용으로 수정할 필요가 없으니 그대로 사용한다.
-        UserServiceTx txUserService = new UserServiceTx();
-        txUserService.setTransactionManager(transactionManager);
-        txUserService.setUserService(testUserService);
+        TransactionHandler txHandler = new TransactionHandler();
+        // 트랜젝션 핸들러가 필요한 정보와 오브젝트를 DI 해준다.
+        txHandler.setTarget(testUserService);
+        txHandler.setTransactionManager(transactionManager);
+        txHandler.setPattern("upgradeLevels");
+
+        // UserService 인터페이스 타입의 다이내믹 프록시 생성
+        UserService userService = (UserService)Proxy.newProxyInstance(
+            getClass().getClassLoader(), new Class[] {UserService.class}, txHandler
+        );
 
         userDao.deleteAll();
         for (User user : users) userDao.add(user);
 
         try {
             // 트랜젝션 기능을 분리한 오브젝트를 통해 예외 발생용 TestUserService가 호출되게 해야 한다.
-            txUserService.upgradeLevels();
+            userService.upgradeLevels();
             fail("TestUserServiceException expected");
         } catch (TestUserServiceException e) { // testUserService가 던져주는 예외를 잡아서 계속 진행되도록 한다. 그 외의 예외라면 테스트 실패
         }
