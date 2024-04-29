@@ -19,6 +19,7 @@ import static org.hamcrest.CoreMatchers.is;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.mail.MailSender;
@@ -226,18 +227,17 @@ public class UserServiceTest {
     static class TestUserServiceException extends RuntimeException {}
 
     @Test
-    @DirtiesContext // 다이내믹 프록시 팩토리 빈을 직접 만들어 사용할 때는 없앴다가 다시 등장한 컨텍스트 무효화 애노테이션
+    @DirtiesContext // 컨텍스트 설정을 변경하기 때문에 여전히 필요하다.
     public void upgradeAllOrNothing() throws Exception {
-        // 예외를 발생시킬 네 번째 사용자의 id를 넣어서 테스트용 UserService 대역 오브젝트를 생성한다.
         UserServiceImpl testUserService = new TestUserService(users.get(3).getId());
-        // userService 빈의 프로퍼티 설정과 동일한 수동 DI
         testUserService.setUserDao(this.userDao);
         testUserService.setMailSender(mailSender);
 
-        TxProxyFactoryBean txProxyFactoryBean = // 팩토리 빈 자체를 가져와야 하므로 빈 이름에 &를 반드시 넣어야 한다.
-            context.getBean("&userService", TxProxyFactoryBean.class); // 테스트용 타깃 주입
+        ProxyFactoryBean txProxyFactoryBean = // userService 빈은 이제 스프링의 ProxyFactoryBean이다.
+            context.getBean("&userService", ProxyFactoryBean.class);
         txProxyFactoryBean.setTarget(testUserService);
-        UserService txUserService = (UserService) txProxyFactoryBean.getObject(); // 변경된 타깃 설정을 이용해서 트랜젝션 다이내믹 프록시 오브젝트를 다시 생성한다.
+        // FactoryBean 타입이므로 동일하게 getObject()로 프록시를 가져온다.
+        UserService txUserService = (UserService) txProxyFactoryBean.getObject();
 
         userDao.deleteAll();
         for (User user : users) userDao.add(user);

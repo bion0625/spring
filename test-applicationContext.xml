@@ -19,14 +19,30 @@
         <property name="dataSource" ref="dataSource"/>
     </bean>
     <bean id="mailSender" class="springbook.user.service.DummyMailSender"/>
-    <bean id="userService" class="springbook.user.service.TxProxyFactoryBean">
-        <property name="target" ref="userServiceImpl"/>
-        <property name="transactionManager" ref="transactionManager"/>
-        <property name="pattern" value="upgradeLevels"/>
-        <property name="serviceInterface" value="springbook.user.service.UserService"/>
-    </bean>
     <bean id="userServiceImpl" class="springbook.user.service.UserServiceImpl">
         <property name="userDao" ref="dao"/>
         <property name="mailSender" ref="mailSender"/>
+    </bean>
+    <bean id="transactionAdvice" class="springbook.learningtest.jdk.proxy.TransactionAdvice">
+        <property name="transactionManager" ref="transactionManager"/>
+    </bean>
+    <bean id="transactionPointcut" class="org.springframework.aop.support.NameMatchMethodPointcut">
+        <property name="mappedName" value="upgrade*"/>
+    </bean>
+    <bean id="transactionAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
+        <property name="advice" ref="transactionAdvice"/>
+        <property name="pointcut" ref="transactionPointcut"/>
+    </bean>
+    <bean id="userService" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target" ref="userServiceImpl"/>
+        <!-- 어드바이스와 어드바이저를 동시에 설정해줄 수 있는 프로퍼티. -->
+        <!-- 리스트에 어드바이스나 어드바이저의 빈 아이디를 값으로 넣어주면 된다. -->
+        <!-- 기존의 ref 애트리뷰트를 사용하는 DI와는 방식이 다름에 주의해야 한다. -->
+        <property name="interceptorNames">
+            <list>
+                <!-- 한 개 이상의 <value> 태그를 넣을 수 있다. -->
+                <value>transactionAdvice</value>
+            </list>
+        </property>
     </bean>
 </beans>
