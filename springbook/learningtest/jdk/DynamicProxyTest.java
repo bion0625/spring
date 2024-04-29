@@ -10,6 +10,8 @@ import java.lang.reflect.Proxy;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.junit.Test;
+import org.springframework.aop.ClassFilter;
+import org.springframework.aop.Pointcut;
 import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.aop.support.DefaultPointcutAdvisor;
 import org.springframework.aop.support.NameMatchMethodPointcut;
@@ -143,5 +145,51 @@ public class DynamicProxyTest {
         assertThat(proxiHello.sayHi("Toby"), is("HI TOBY"));
         // 메소드 이름이 포인트컷의 선정조건에 맞지 않으므로, 부가기능(대문자변환)이 적용되지 않는다.
         assertThat(proxiHello.sayThankYou("Toby"), is("Thank You Toby"));
+    }
+
+    @Test
+    public void classNamePointcutAdvisor() {
+        // 포인트컷 준비
+        NameMatchMethodPointcut classMethodPointcut = new NameMatchMethodPointcut() {
+            @Override
+            public ClassFilter getClassFilter() {
+                return new ClassFilter() {
+                    public boolean matches(Class<?> clazz) {
+                        // 클래스 이름이 HelloT로 시작하는 것만 선정한다.
+                        return clazz.getSimpleName().startsWith("HelloT");
+                    }
+                };
+            }
+        };
+        classMethodPointcut.setMappedName("sayH*"); // sayH로 시작하는 메소드 이름을 가진 메소드만 선정한다.
+
+        // 테스트
+        checkAdviced(new HelloTarget(), classMethodPointcut, true); // 적용 클래스다.
+
+        class HelloWorld extends HelloTarget {};
+        checkAdviced(new HelloWorld(), classMethodPointcut, false); // 적용 클래스가 아니다.
+
+        class HelloToby extends HelloTarget {};
+        checkAdviced(new HelloToby(), classMethodPointcut, true); // 적용 클래스다.
+    }
+
+    private void checkAdviced(Object target, Pointcut pointcut, boolean adviced) { // 적용 대상인가?
+        ProxyFactoryBean pfBean = new ProxyFactoryBean();
+        pfBean.setTarget(target);
+        pfBean.addAdvisor(new DefaultPointcutAdvisor(pointcut, new UpperCaseAdvice()));
+        Hello proxiedHello = (Hello) pfBean.getObject();
+
+        if (adviced) {
+            // 메소드 선정 방식을 통해 어드바이스 적용
+            assertThat(proxiedHello.sayHello("Toby"), is("HELLO TOBY"));
+            assertThat(proxiedHello.sayHi("Toby"), is("HI TOBY"));
+            assertThat(proxiedHello.sayThankYou("Toby"), is("Thank You Toby"));
+        }
+        else {
+            // 어드바이스 적용 대상 후보에서 아예 탈락
+            assertThat(proxiedHello.sayHello("Toby"), is("Hello Toby"));
+            assertThat(proxiedHello.sayHi("Toby"), is("Hi Toby"));
+            assertThat(proxiedHello.sayThankYou("Toby"), is("Thank You Toby"));
+        }
     }
 }
