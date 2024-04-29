@@ -8,7 +8,6 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.any;
 
-import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -21,6 +20,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.DirtiesContext;
@@ -51,6 +51,8 @@ public class UserServiceTest {
 
     @Autowired
     MailSender mailSender;
+
+    @Autowired ApplicationContext context; // 팩토리 빈을 가져오려면 애플리케이션 컨텍스트가 필요하다.
 
     List<User> users; // 테스트 픽스처
 
@@ -224,6 +226,7 @@ public class UserServiceTest {
     static class TestUserServiceException extends RuntimeException {}
 
     @Test
+    @DirtiesContext // 다이내믹 프록시 팩토리 빈을 직접 만들어 사용할 때는 없앴다가 다시 등장한 컨텍스트 무효화 애노테이션
     public void upgradeAllOrNothing() throws Exception {
         // 예외를 발생시킬 네 번째 사용자의 id를 넣어서 테스트용 UserService 대역 오브젝트를 생성한다.
         UserServiceImpl testUserService = new TestUserService(users.get(3).getId());
@@ -231,23 +234,17 @@ public class UserServiceTest {
         testUserService.setUserDao(this.userDao);
         testUserService.setMailSender(mailSender);
 
-        TransactionHandler txHandler = new TransactionHandler();
-        // 트랜젝션 핸들러가 필요한 정보와 오브젝트를 DI 해준다.
-        txHandler.setTarget(testUserService);
-        txHandler.setTransactionManager(transactionManager);
-        txHandler.setPattern("upgradeLevels");
-
-        // UserService 인터페이스 타입의 다이내믹 프록시 생성
-        UserService userService = (UserService)Proxy.newProxyInstance(
-            getClass().getClassLoader(), new Class[] {UserService.class}, txHandler
-        );
+        TxProxyFactoryBean txProxyFactoryBean = // 팩토리 빈 자체를 가져와야 하므로 빈 이름에 &를 반드시 넣어야 한다.
+            context.getBean("&userService", TxProxyFactoryBean.class); // 테스트용 타깃 주입
+        txProxyFactoryBean.setTarget(testUserService);
+        UserService txUserService = (UserService) txProxyFactoryBean.getObject(); // 변경된 타깃 설정을 이용해서 트랜젝션 다이내믹 프록시 오브젝트를 다시 생성한다.
 
         userDao.deleteAll();
         for (User user : users) userDao.add(user);
 
         try {
             // 트랜젝션 기능을 분리한 오브젝트를 통해 예외 발생용 TestUserService가 호출되게 해야 한다.
-            userService.upgradeLevels();
+            txUserService.upgradeLevels();
             fail("TestUserServiceException expected");
         } catch (TestUserServiceException e) { // testUserService가 던져주는 예외를 잡아서 계속 진행되도록 한다. 그 외의 예외라면 테스트 실패
         }
