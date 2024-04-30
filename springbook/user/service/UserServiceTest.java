@@ -6,7 +6,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.any;
+import static org.mockito.Matchers.any;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,7 +19,6 @@ import static org.hamcrest.CoreMatchers.is;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.mail.MailSender;
@@ -44,8 +43,11 @@ public class UserServiceTest {
     UserDao userDao;
 
     @Autowired UserService userService;
-
-    @Autowired UserServiceImpl userServiceImpl;
+    /*
+     * 같은 타입의 빈이 두 개 존재하기 때문에 필드 이름을 기준으로 주입될 빈이 결정된다.
+     * 자동 프록시 생성기에 의해 트랜젝션 부가기능이 testUserService 빈에 적용됐는지 확인하는 것이 목적이다.
+    */
+    @Autowired UserService testUserService;
 
     @Autowired
     PlatformTransactionManager transactionManager;
@@ -210,15 +212,12 @@ public class UserServiceTest {
         assertThat(userWithoutLevelRead.getLevel(), is(Level.BASIC));
     }
 
-    static class TestUserService extends UserServiceImpl {
-        private String id;
+    // 포인트컷의 클래스필터에 선정되도록 이름 변경
+    // 이래서 처음부터 이름을 잘 지어야 한다.
+    static class TestUserServiceImpl extends UserServiceImpl {
+        private String id = "madnite1"; // 테스트 픽스처의 users(3)의 id 값을 고정시켜버렸다.
 
-        public TestUserService(String id) { // 예외를 발생시킬 User 오브젝트의 id를 지정할 수 있게 만든다.
-            this.id = id;
-        }
-
-        protected void upgradeLevel(User user) { // UserService의 메소드를 오버라이드한다.
-            // 지정된 id의 user 오브젝트가 발견되면 예외를 던져서 작업을 강제로 중단한다.
+        protected void upgradeLevel(User user) {
             if (user.getId().equals(this.id)) throw new TestUserServiceException();
             super.upgradeLevel(user);
         }
@@ -226,30 +225,26 @@ public class UserServiceTest {
 
     static class TestUserServiceException extends RuntimeException {}
 
+    /*
+     * 스프링 컨텍스트의 빈 설정을 변경하지 않으므로 @DirtiesContext 애노테이션은 제거됐다.
+     * 모든 테스트를 위한 DI 작업은 설정파일을 통해 서버에서 진행되므로 테스트 코드 자체는 단순해진다.
+    */
     @Test
-    @DirtiesContext // 컨텍스트 설정을 변경하기 때문에 여전히 필요하다.
     public void upgradeAllOrNothing() throws Exception {
-        UserServiceImpl testUserService = new TestUserService(users.get(3).getId());
-        testUserService.setUserDao(this.userDao);
-        testUserService.setMailSender(mailSender);
-
-        ProxyFactoryBean txProxyFactoryBean = // userService 빈은 이제 스프링의 ProxyFactoryBean이다.
-            context.getBean("&userService", ProxyFactoryBean.class);
-        txProxyFactoryBean.setTarget(testUserService);
-        // FactoryBean 타입이므로 동일하게 getObject()로 프록시를 가져온다.
-        UserService txUserService = (UserService) txProxyFactoryBean.getObject();
-
         userDao.deleteAll();
         for (User user : users) userDao.add(user);
 
         try {
-            // 트랜젝션 기능을 분리한 오브젝트를 통해 예외 발생용 TestUserService가 호출되게 해야 한다.
-            txUserService.upgradeLevels();
+            this.testUserService.upgradeLevels();
             fail("TestUserServiceException expected");
         } catch (TestUserServiceException e) { // testUserService가 던져주는 예외를 잡아서 계속 진행되도록 한다. 그 외의 예외라면 테스트 실패
         }
 
-        // 예외가 발생하기 전에 레벨 변경이 있었던 사용자의 레벨이 처음 상태로 바뀌었나 확인
         checkLevelUpgraded(users.get(1), false);
+    }
+
+    @Test
+    public void advisorAutoProxyCreator() {
+        assertThat(testUserService, is(java.lang.reflect.Proxy.class));
     }
 }
