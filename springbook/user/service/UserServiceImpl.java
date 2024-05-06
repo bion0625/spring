@@ -68,4 +68,14 @@ public class UserServiceImpl implements UserService {
 
         this.mailSender.send(mailMessage);
     }
+
+    // DAO로 위임하도록 만든다. 필요한 부가 로직을 넣어도 좋다.
+    @Override
+    public User get(String id) { return userDao.get(id); }
+    @Override
+    public List<User> getAll() { return userDao.getAll(); }
+    @Override
+    public void deleteAll() { userDao.deleteAll(); }
+    @Override
+    public void update(User user) { userDao.update(user); }
 }
