@@ -28,6 +28,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import springbook.user.dao.UserDao;
 import springbook.user.domain.Level;
@@ -39,6 +41,8 @@ import static springbook.user.service.UserServiceImpl.MIN_RECCOMEND_FOR_GOLD;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "/test-applicationContext.xml")
 public class UserServiceTest {
+    @Autowired
+    PlatformTransactionManager transactionManager;
 
     @Autowired
     UserDao userDao;
@@ -49,9 +53,6 @@ public class UserServiceTest {
      * 자동 프록시 생성기에 의해 트랜젝션 부가기능이 testUserService 빈에 적용됐는지 확인하는 것이 목적이다.
     */
     @Autowired UserService testUserService;
-
-    @Autowired
-    PlatformTransactionManager transactionManager;
 
     @Autowired
     MailSender mailSender;
@@ -262,5 +263,40 @@ public class UserServiceTest {
     @Test
     public void advisorAutoProxyCreator() {
         assertThat(testUserService, is(java.lang.reflect.Proxy.class));
+    }
+
+    @Test
+    public void transactionSync() {
+        // 트랜잭션을 롤백했을 때 돌아갈 초기 상태를 만들기 위해 트랜잭션 시작 전에 초기화를 한다.
+        userDao.deleteAll();
+        assertThat(userDao.getCount(), is(0));
+
+        // 트랜잭션 정의는 기본 값을 사용한다.
+        DefaultTransactionDefinition txDefinition = new DefaultTransactionDefinition();
+        /*
+         * 트랜잭션 매니저에게 트랜잭션을 요청한다.
+         * 기존에 시작된 트랜잭션이 없으니 새로운 트랜잭션을 시작시키고 트랜잭션 정보를 돌려준다.
+         * 동시에 만들어진 트랜잭션을 다른 곳에서도 사용할 수 있도록 동기화한다.
+        */
+        TransactionStatus txStatus = transactionManager.getTransaction(txDefinition);
+
+        try { // 테스트 안의 모든 작업을 하나의 트랜잭션으로 통합한다.
+            userService.add(users.get(0));
+            userService.add(users.get(1));
+            // userDao의 getCount() 메소드도 같은 트랜잭션에서 동작한다. add()에 의해 두 개가 등록됐는지 확인해둔다.
+            assertThat(userDao.getCount(), is(2));
+        }
+        finally {
+            /*
+             * 테스트 결과가 어떻든 상관없이 테스트가 끝나면 무조건 롤백한다.
+             * 테스트 중에 발생했던 DB의 변경 사항은 모두 이전 상태로 복구된다.
+             * 
+             * 강제로 롤백한다. 트랜잭션 시작 전 상태로 돌아가야 한다.
+            */
+            transactionManager.rollback(txStatus);
+        }
+
+        // add()의 작업이 취소되고 트랜잭션 시작 이전의 상태임을 확인할 수 있다.
+        assertThat(userDao.getCount(), is(0));
     }
 }
