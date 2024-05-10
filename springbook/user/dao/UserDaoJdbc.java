@@ -3,6 +3,7 @@ package springbook.user.dao;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
@@ -13,6 +14,14 @@ import springbook.user.domain.Level;
 import springbook.user.domain.User;
 
 public class UserDaoJdbc implements UserDao{
+    // private String sqlAdd;
+    // private String sqlDeleteAll;
+    // private String sqlGet;
+    // private String sqlGetAll;
+    // private String sqlGetCount;
+    // private String sqlUpdate;
+
+    private Map<String, String> sqlMap;
 
     private JdbcTemplate jdbcTemplate;
 
@@ -31,47 +40,74 @@ public class UserDaoJdbc implements UserDao{
                 return user;
             }
         };
+    
+    // public void setSqlAdd(String sqlAdd) {
+    //     this.sqlAdd = sqlAdd;
+    // }
+
+    // public void setSqlDeleteAll(String sqlDeleteAll) {
+    //     this.sqlDeleteAll = sqlDeleteAll;
+    // }
+
+    // public void setSqlGet(String sqlGet) {
+    //     this.sqlGet = sqlGet;
+    // }
+
+    // public void setSqlGetAll(String sqlGetAll) {
+    //     this.sqlGetAll = sqlGetAll;
+    // }
+
+    // public void setSqlGetCount(String sqlGetCount) {
+    //     this.sqlGetCount = sqlGetCount;
+    // }
+
+    // public void setSqlUpdate(String sqlUpdate) {
+    //     this.sqlUpdate = sqlUpdate;
+    // }
+
+    public void setSqlMap(Map<String, String> sqlMap) {
+        this.sqlMap = sqlMap;
+    }
 
     public void setDataSource(DataSource dataSource) { // 수정자 메소드이면서 JdbcContext에 대한 생성, DI 작업을 동시에 수행한다.
         this.jdbcTemplate = new JdbcTemplate(dataSource); // DataSource 오브젝트는 JdbcTemplate을 만든 후에는 사용하지 않으니 저장해두지 않아도 된다.
     }
 
     public void deleteAll() {
-        this.jdbcTemplate.update("delete from users");
+        this.jdbcTemplate.update(this.sqlMap.get("deleteAll"));
     }
 
-    public void add(final User user) { // 애플리케이션 레벨의 체크 예외
+    public void add(final User user) {
         this.jdbcTemplate.update(
-            "insert into users(id, name, password, email, level, login, recommend) " + 
-            "values(?,?,?,?,?,?,?) ", user.getId(), user.getName(), 
-            user.getPassword(), user.getEmail(), user.getLevel().intValue(), user.getLogin(), user.getRecommend()
+            this.sqlMap.get("add"), // 프로퍼티로 제공받은 맵으로부터 키를 이용해서 필요한 SQL을 가져온다.
+            user.getId(), user.getName(), user.getPassword(), user.getEmail(), 
+            user.getLevel().intValue(), user.getLogin(), user.getRecommend()
         );
     }
 
     public User get(String id) {
         return this.jdbcTemplate.queryForObject(
-            "select * from users where id = ?", 
+            this.sqlMap.get("get"),
             new Object[] {id}, // SQL에 바인딩할 파라미터 값. 가변인자 대신 배열을 사용한다.
             this.userMapper);
     }
 
     public List<User> getAll() {
         return this.jdbcTemplate.query(
-            "select * from users order by id", 
+            this.sqlMap.get("getAll"),
             this.userMapper);
     }
 
     public int getCount() {
-        return this.jdbcTemplate.queryForInt("select count(*) from users");
+        return this.jdbcTemplate.queryForInt(this.sqlMap.get("getCount"));
     }
 
     @Override
     public void update(User user) {
         this.jdbcTemplate.update(
-            "update users set name = ?, password = ?, email = ?, level = ?, login = ? , " + 
-            "recommend = ? where id = ?", user.getName(), user.getPassword(),
-            user.getEmail(), user.getLevel().intValue(), user.getLogin(), user.getRecommend(),
-            user.getId()
+            this.sqlMap.get("update"), 
+            user.getName(), user.getPassword(), user.getEmail(), user.getLevel().intValue(), 
+            user.getLogin(), user.getRecommend(), user.getId()
         );
     }
 }
