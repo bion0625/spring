@@ -14,12 +14,6 @@ import springbook.user.domain.Level;
 import springbook.user.domain.User;
 
 public class UserDaoJdbc implements UserDao{
-    // private String sqlAdd;
-    // private String sqlDeleteAll;
-    // private String sqlGet;
-    // private String sqlGetAll;
-    // private String sqlGetCount;
-    // private String sqlUpdate;
 
     private Map<String, String> sqlMap;
 
@@ -40,30 +34,6 @@ public class UserDaoJdbc implements UserDao{
                 return user;
             }
         };
-    
-    // public void setSqlAdd(String sqlAdd) {
-    //     this.sqlAdd = sqlAdd;
-    // }
-
-    // public void setSqlDeleteAll(String sqlDeleteAll) {
-    //     this.sqlDeleteAll = sqlDeleteAll;
-    // }
-
-    // public void setSqlGet(String sqlGet) {
-    //     this.sqlGet = sqlGet;
-    // }
-
-    // public void setSqlGetAll(String sqlGetAll) {
-    //     this.sqlGetAll = sqlGetAll;
-    // }
-
-    // public void setSqlGetCount(String sqlGetCount) {
-    //     this.sqlGetCount = sqlGetCount;
-    // }
-
-    // public void setSqlUpdate(String sqlUpdate) {
-    //     this.sqlUpdate = sqlUpdate;
-    // }
 
     public void setSqlMap(Map<String, String> sqlMap) {
         this.sqlMap = sqlMap;
