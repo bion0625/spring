@@ -6,6 +6,20 @@
     "configurations": [
         {
             "type": "java",
+            "name": "JaxbTest",
+            "request": "launch",
+            "mainClass": "springbook.learningtest.jdk.jaxb.JaxbTest",
+            "projectName": "spring_cca53c9a"
+        },
+        {
+            "type": "java",
+            "name": "UserDaoTest",
+            "request": "launch",
+            "mainClass": "springbook.user.dao.UserDaoTest",
+            "projectName": "spring_cca53c9a"
+        },
+        {
+            "type": "java",
             "name": "Current File",
             "request": "launch",
             "mainClass": "${file}"
