@@ -1,4 +1,4 @@
-package springbook.user.sqlservice;
+package springbook.sqlservice;
 
 public class SqlNotFountException extends RuntimeException{
     public SqlNotFountException(String message) {

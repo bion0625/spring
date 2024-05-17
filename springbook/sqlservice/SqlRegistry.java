@@ -1,4 +1,4 @@
-package springbook.user.sqlservice;
+package springbook.sqlservice;
 
 public interface SqlRegistry {
     void registerSql(String key, String sql); // SQL을 키와 함께 등록한다.

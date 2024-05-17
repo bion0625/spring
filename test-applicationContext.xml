@@ -22,7 +22,7 @@
         <property name="dataSource" ref="dataSource"/>
         <property name="sqlService" ref="sqlService"/>
     </bean>
-    <bean id="sqlService" class="springbook.user.sqlservice.DefaultSqlService"/>
+    <bean id="sqlService" class="springbook.sqlservice.DefaultSqlService"/>
     <bean id="dao" class="springbook.user.dao.UserDaoJdbc">
         <property name="dataSource" ref="dataSource"/>
     </bean>

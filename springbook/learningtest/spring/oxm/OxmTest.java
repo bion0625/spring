@@ -7,8 +7,8 @@ import org.springframework.oxm.Unmarshaller; // JAXB API 등에서 사용하는 
 import org.springframework.oxm.XmlMappingException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import springbook.user.sqlservice.jaxb.SqlType;
-import springbook.user.sqlservice.jaxb.Sqlmap;
+import springbook.sqlservice.jaxb.SqlType;
+import springbook.sqlservice.jaxb.Sqlmap;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
