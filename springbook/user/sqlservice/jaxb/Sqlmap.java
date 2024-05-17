@@ -6,7 +6,7 @@
 //
 
 
-package springbook.sqlservice.jaxb;
+package springbook.user.sqlservice.jaxb;
 
 import java.util.ArrayList;
 import java.util.List;

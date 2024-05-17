@@ -1,8 +1,8 @@
-package springbook.sqlservice;
+package springbook.user.sqlservice;
 
 import springbook.user.dao.UserDao;
-import springbook.sqlservice.jaxb.SqlType;
-import springbook.sqlservice.jaxb.Sqlmap;
+import springbook.user.sqlservice.jaxb.SqlType;
+import springbook.user.sqlservice.jaxb.Sqlmap;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;

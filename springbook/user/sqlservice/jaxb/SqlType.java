@@ -6,7 +6,7 @@
 //
 
 
-package springbook.sqlservice.jaxb;
+package springbook.user.sqlservice.jaxb;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

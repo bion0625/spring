@@ -13,8 +13,8 @@ import javax.xml.bind.Unmarshaller;
 import org.junit.Test;
 import org.junit.runner.JUnitCore;
 
-import springbook.sqlservice.jaxb.SqlType;
-import springbook.sqlservice.jaxb.Sqlmap;
+import springbook.user.sqlservice.jaxb.SqlType;
+import springbook.user.sqlservice.jaxb.Sqlmap;
 
 public class JaxbTest {
 

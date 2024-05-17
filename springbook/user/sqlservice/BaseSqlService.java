@@ -1,4 +1,4 @@
-package springbook.sqlservice;
+package springbook.user.sqlservice;
 
 import javax.annotation.PostConstruct;
 
