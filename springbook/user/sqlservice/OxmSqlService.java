@@ -1,5 +1,7 @@
 package springbook.user.sqlservice;
 
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.oxm.Unmarshaller;
 import springbook.user.dao.UserDao;
 import springbook.user.sqlservice.jaxb.SqlType;
@@ -32,8 +34,10 @@ public class OxmSqlService implements SqlService {
     public void setUnmarshaller(Unmarshaller unmarshaller) {
         this.oxmSqlReader.setUnmarshaller(unmarshaller);
     }
-    public void setSqlmapFile(String sqlmapFile) {
-        this.oxmSqlReader.setSqlmapFile(sqlmapFile);
+
+    // 이름과 타입을 모두 변경한다. 큰 변화긴 하지만 그만큼 기능을 확장하고 유연성을 얻는 것이니 과감하게 변경한다.
+    public void setSqlmap(Resource sqlmap) {
+        this.oxmSqlReader.setSqlmap(sqlmap);
     }
 
     // SqlService 인터페이스에 대한 구현 코드는 BaseSqlService와 같다.
@@ -55,21 +59,21 @@ public class OxmSqlService implements SqlService {
 
     private class OxmSqlReader implements SqlReader {
         private Unmarshaller unmarshaller;
-        private final static String DEFAULT_SQLMAP_FILE ="sqlmap.xml";
-        private String sqlmapFile = DEFAULT_SQLMAP_FILE;
+
+        // 디폴트 파일은 기존과 같지만 이제는 Resource 구현 클래스인 ClassPathResource를 이용한다.
+        private Resource sqlmap = new ClassPathResource("sqlmap.xml", UserDao.class);
 
         public void setUnmarshaller(Unmarshaller unmarshaller) {
             this.unmarshaller = unmarshaller;
         }
-        public void setSqlmapFile(String sqlmapFile) {
-            this.sqlmapFile = sqlmapFile;
+        public void setSqlmap(Resource sqlmap) {
+            this.sqlmap = sqlmap;
         }
 
         @Override
         public void read(SqlRegistry sqlRegistry) {
             try {
-                Source source = new StreamSource(
-                        UserDao.class.getResourceAsStream(this.sqlmapFile));
+                Source source = new StreamSource(sqlmap.getInputStream()); // 리소스의 종류에 상관없이 스트림으로 가져올 수 있다.
                 // OxmSqlService를 통해 전달받은 OXM 인터페이스 구현 오브젝트를 가지고 언마샬링 작업 수행
                 Sqlmap sqlmap = (Sqlmap) this.unmarshaller.unmarshal(source);
                 for (SqlType sql : sqlmap.getSql()) {
@@ -80,7 +84,7 @@ public class OxmSqlService implements SqlService {
                 * 언마샬 작업 중 IO 에러가 났다면 설정을 통해 제공받은 XML 파일 이름이나 정보가 잘못됐을 가능성이 제일 높다.
                 * 이런 경우에 가장 적합한 런타임 예외 중 하나만 IllegalArgumentException으로 포장해서 던진다.
                 * */
-                throw new IllegalArgumentException(String.format("%s을 가져올 수 없습니다", this.sqlmapFile), e);
+                throw new IllegalArgumentException(String.format("%s을 가져올 수 없습니다", this.sqlmap.getFilename()), e);
             }
         }
     }

@@ -27,6 +27,8 @@
     </bean>
     <bean id="sqlService" class="springbook.user.sqlservice.OxmSqlService">
         <property name="unmarshaller" ref="unmarshaller"/>
+        <!--classpath는 디폴트이므로 생략 가능하다. 클래스패스 위치를 지정할 때는 클래스패스 루트로부터 절대 위치를 적어야 한다.-->
+        <property name="sqlmap" value="classpath:springbook/user/dao/sqlmap.xml"/>
     </bean>
     <bean id="dao" class="springbook.user.dao.UserDaoJdbc">
         <property name="dataSource" ref="dataSource"/>
