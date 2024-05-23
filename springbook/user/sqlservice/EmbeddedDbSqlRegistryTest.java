@@ -16,10 +16,7 @@ public class EmbeddedDbSqlRegistryTest extends AbstractUpdatableSqlRegistryTest{
     EmbeddedDatabase db;
 
     @Override
-    protected UpdatableSqlRegistry createUpdatableSqlRegistry(UpdatableSqlRegistry sqlRegistry) {
-        if (sqlRegistry != null) {
-            return sqlRegistry;
-        }
+    protected UpdatableSqlRegistry createUpdatableSqlRegistry() {
         db = new EmbeddedDatabaseBuilder()
                 .setType(HSQL).addScript(
                         "classpath:springbook/user/sqlservice/updatable/sqlRegistrySchema.sql")

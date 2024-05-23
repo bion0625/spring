@@ -4,7 +4,7 @@ import springbook.user.sqlservice.updatable.ConcurrentHashMapSqlRegistry;
 
 public class ConcurrentHashMapSqlRegistryTest extends AbstractUpdatableSqlRegistryTest {
     @Override
-    protected UpdatableSqlRegistry createUpdatableSqlRegistry(UpdatableSqlRegistry sqlRegistry) {
+    protected UpdatableSqlRegistry createUpdatableSqlRegistry() {
         return new ConcurrentHashMapSqlRegistry();
     }
 }

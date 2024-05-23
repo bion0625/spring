@@ -2,10 +2,6 @@ package springbook.user.sqlservice;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import springbook.user.sqlservice.SqlNotFountException;
-import springbook.user.sqlservice.SqlUpdateFailureException;
-import springbook.user.sqlservice.UpdatableSqlRegistry;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,12 +10,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public abstract class AbstractUpdatableSqlRegistryTest { // UpdatableSqlRegistry 인터페이스를 구현한 모든 클래스에 대한 테스트를 만들 때 사용할 수 있는 추상 테스트 클래스다.
-    @Autowired
     UpdatableSqlRegistry sqlRegistry; // 테스트에서 사용할 픽스처는 인터페이스로 정의해두길 잘했다.
 
     @Before
     public void setUp() {
-        sqlRegistry = createUpdatableSqlRegistry(sqlRegistry);
+        sqlRegistry = createUpdatableSqlRegistry();
 
         // 각 테스트 메소드에서 사용할 초기 SQL 정보를 미리 등록한다.
         sqlRegistry.registerSql("KEY1", "SQL1");
@@ -28,7 +23,7 @@ public abstract class AbstractUpdatableSqlRegistryTest { // UpdatableSqlRegistry
     }
 
     // 테스트 픽스처를 생성하는 부분만 추상 메소드로 만들어두고 서브클래스에서 이를 구현하도록 만든다.
-    abstract protected UpdatableSqlRegistry createUpdatableSqlRegistry(UpdatableSqlRegistry sqlRegistry);
+    abstract protected UpdatableSqlRegistry createUpdatableSqlRegistry();
 
     @Test
     public void find() {
