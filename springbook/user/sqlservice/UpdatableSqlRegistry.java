@@ -1,6 +1,7 @@
-package springbook.issuetracker.sqlservice;
+package springbook.user.sqlservice;
 
 import springbook.user.sqlservice.SqlRegistry;
+import springbook.user.sqlservice.SqlUpdateFailureException;
 
 import java.util.Map;
 

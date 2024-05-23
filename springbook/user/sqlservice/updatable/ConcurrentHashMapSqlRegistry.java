@@ -1,7 +1,7 @@
 package springbook.user.sqlservice.updatable;
 
-import springbook.issuetracker.sqlservice.SqlUpdateFailureException;
-import springbook.issuetracker.sqlservice.UpdatableSqlRegistry;
+import springbook.user.sqlservice.SqlUpdateFailureException;
+import springbook.user.sqlservice.UpdatableSqlRegistry;
 import springbook.user.sqlservice.SqlNotFountException;
 
 import java.util.Map;

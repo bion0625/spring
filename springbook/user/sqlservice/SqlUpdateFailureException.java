@@ -1,4 +1,4 @@
-package springbook.issuetracker.sqlservice;
+package springbook.user.sqlservice;
 
 public class SqlUpdateFailureException extends RuntimeException {
     public SqlUpdateFailureException(String message) {

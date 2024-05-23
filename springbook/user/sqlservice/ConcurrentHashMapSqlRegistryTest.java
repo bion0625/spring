@@ -1,10 +1,10 @@
-package springbook.issuetracker.sqlservice;
+package springbook.user.sqlservice;
 
 import springbook.user.sqlservice.updatable.ConcurrentHashMapSqlRegistry;
 
 public class ConcurrentHashMapSqlRegistryTest extends AbstractUpdatableSqlRegistryTest {
     @Override
-    protected UpdatableSqlRegistry createUpdatableSqlRegistry() {
+    protected UpdatableSqlRegistry createUpdatableSqlRegistry(UpdatableSqlRegistry sqlRegistry) {
         return new ConcurrentHashMapSqlRegistry();
     }
 }

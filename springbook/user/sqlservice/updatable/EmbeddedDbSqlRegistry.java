@@ -1,4 +1,4 @@
-package springbook.issuetracker.sqlservice.updatable;
+package springbook.user.sqlservice.updatable;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
@@ -6,8 +6,8 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
-import springbook.issuetracker.sqlservice.SqlUpdateFailureException;
-import springbook.issuetracker.sqlservice.UpdatableSqlRegistry;
+import springbook.user.sqlservice.SqlUpdateFailureException;
+import springbook.user.sqlservice.UpdatableSqlRegistry;
 import springbook.user.sqlservice.SqlNotFountException;
 
 import javax.sql.DataSource;

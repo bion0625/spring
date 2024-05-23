@@ -1,10 +1,10 @@
-package springbook.issuetracker.sqlservice;
+package springbook.user.sqlservice;
 
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import springbook.issuetracker.sqlservice.updatable.EmbeddedDbSqlRegistry;
+import springbook.user.sqlservice.updatable.EmbeddedDbSqlRegistry;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +16,10 @@ public class EmbeddedDbSqlRegistryTest extends AbstractUpdatableSqlRegistryTest{
     EmbeddedDatabase db;
 
     @Override
-    protected UpdatableSqlRegistry createUpdatableSqlRegistry() {
+    protected UpdatableSqlRegistry createUpdatableSqlRegistry(UpdatableSqlRegistry sqlRegistry) {
+        if (sqlRegistry != null) {
+            return sqlRegistry;
+        }
         db = new EmbeddedDatabaseBuilder()
                 .setType(HSQL).addScript(
                         "classpath:springbook/user/sqlservice/updatable/sqlRegistrySchema.sql")
