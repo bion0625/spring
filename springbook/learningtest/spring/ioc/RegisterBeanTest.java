@@ -3,8 +3,14 @@ package springbook.learningtest.spring.ioc;
 import org.junit.Test;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
+import org.springframework.beans.factory.support.PropertiesBeanDefinitionReader;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
+import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.context.support.GenericXmlApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
+import springbook.learningtest.spring.ioc.bean.Hello;
+import springbook.learningtest.spring.ioc.bean.StringPrinter;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
@@ -71,6 +77,52 @@ public class RegisterBeanTest {
         * Hello 클래스의 print() 메소드는 DI 된 Printer 타입의 오브젝트에게 요청해서 인삿말을 출력한다.
         * 이 결과를 스트링으로 저장해두는 printer 빈을 통해 확인한다.
         * */
+        assertThat(ac.getBean("printer").toString(), is("Hello Spring"));
+    }
+
+    @Test
+    public void genericApplicationContext() {
+        GenericApplicationContext ac = new StaticApplicationContext();
+
+        XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(ac);
+        reader.loadBeanDefinitions(
+                // XmlBeanDefinitionReader는 기본적으로 클래스패스로 정의된 리소스로부터 파일을 읽는다.
+                "springbook/learningtest/spring/ioc/genericApplicationContext.xml");
+
+        // 모든 메타정보가 등록이 완료됐으니 애플리케이션 컨테이너를 초기화하라는 명령이다.
+        ac.refresh();
+
+        Hello hello = ac.getBean("hello", Hello.class);
+        hello.print();
+
+        assertThat(ac.getBean("printer").toString(), is("Hello Spring"));
+    }
+
+    @Test
+    public void genericXmlApplicationContext() {
+        // 애플리케이션 컨텍스트 생성과 동시에 XML 파일을 읽어오고 초기화까지 수행한다.
+        GenericXmlApplicationContext ac = new GenericXmlApplicationContext(
+                "springbook/learningtest/spring/ioc/genericApplicationContext.xml");
+
+        // IoC 컨테이너가 구성한 빈 오브젝트로 이뤄진 애플리케이션을 기동할 오브젝트를 getBean()으로 가져온다.
+        Hello hello = ac.getBean("hello", Hello.class);
+        hello.print();
+
+        assertThat(ac.getBean("printer").toString(), is("Hello Spring"));
+    }
+
+    @Test
+    public void genericApplicationContextWithProperties() {
+        GenericApplicationContext ac = new StaticApplicationContext();
+
+        PropertiesBeanDefinitionReader reader = new PropertiesBeanDefinitionReader(ac);
+        reader.loadBeanDefinitions("springbook/learningtest/spring/ioc/genericApplicationContext.properties");
+
+        ac.refresh();
+
+        Hello hello = ac.getBean("hello", Hello.class);
+        hello.print();
+
         assertThat(ac.getBean("printer").toString(), is("Hello Spring"));
     }
 }
