@@ -7,14 +7,14 @@ import org.springframework.beans.factory.support.PropertiesBeanDefinitionReader;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.context.support.GenericXmlApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
-import springbook.learningtest.spring.ioc.bean.Hello;
-import springbook.learningtest.spring.ioc.bean.Printer;
-import springbook.learningtest.spring.ioc.bean.StringPrinter;
+import springbook.learningtest.spring.ioc.bean.*;
+import springbook.learningtest.spring.ioc.bean.config.AnnotatedHelloConfig;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
@@ -151,5 +151,31 @@ public class RegisterBeanTest {
         hello.print();
         // getBean()으로 가져온 hello 빈은 자식 컨텍스트에 존재하는 것임을 확인할 수 있다.
         assertThat(printer.toString(), is("Hello Child"));
+    }
+
+    @Test
+    public void simpleBeanScanning() {
+        ApplicationContext ctx = new AnnotationConfigApplicationContext(
+                /*
+                * @Component가 붙은 클래스를 스캔할 패키지를 넣어서 컨텍스트를 만들어준다.
+                * 생성과 동시에 자동으로 스캔과 등록이 진행된다.
+                * */
+                "springbook.learningtest.spring.ioc.bean");
+        // 자동등록되는 빈의 아이디는 클래스 이름의 첫 글자를 소문자로 바꿔서 사용한다.
+        AnnotatedHello hello = ctx.getBean("annotatedHello", AnnotatedHello.class);
+
+        assertThat(hello, is(notNullValue()));
+    }
+
+    @Test
+    public void configurationBeanScanning() {
+        ApplicationContext ctx = new AnnotationConfigApplicationContext(AnnotatedHelloConfig.class);
+        AnnotatedHello hello = ctx.getBean("annotatedHello", AnnotatedHello.class);
+        assertThat(hello, is(notNullValue()));
+
+        AnnotatedHelloConfig config = ctx.getBean("annotatedHelloConfig", AnnotatedHelloConfig.class);
+        assertThat(config, is(notNullValue()));
+
+        assertThat(config.annotatedHello(), is(sameInstance(hello)));
     }
 }

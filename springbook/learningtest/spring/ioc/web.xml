@@ -14,11 +14,15 @@
         </param-value>
     </context-param>
     
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <!--하나 이상의 스캔 대상 패키지를 지정할 수도 있다. 이때는 각 패키지 사이에 공백을 넣어주면 된다.-->
+        <param-value>springbook.learningtest.spring.ioc.bean</param-value>
+    </context-param>
+    
     <servlet>
         <servlet-name>spring</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-        
         <init-param>
             <param-name>contextConfigLocation</param-name>
             <param-value>
@@ -26,5 +30,12 @@
                 /WEB-INF/spring-servlet.xml
             </param-value>
         </init-param>
+        <load-on-startup>1</load-on-startup>
     </servlet>
+
+
+    <servlet-mapping>
+        <servlet-name>spring</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
 </web-app>
