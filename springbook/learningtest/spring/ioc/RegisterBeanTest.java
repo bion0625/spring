@@ -1,6 +1,7 @@
 package springbook.learningtest.spring.ioc;
 
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.PropertiesBeanDefinitionReader;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.context.support.GenericXmlApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
@@ -178,4 +180,20 @@ public class RegisterBeanTest {
 
         assertThat(config.annotatedHello(), is(sameInstance(hello)));
     }
+
+    @Test
+    public void simpleAtAutowired() {
+        // AnnotationConfigApplicationContext를 사용하면 등록할 빈 클래스를 직접 지정할 수 있다.
+        AbstractApplicationContext ac = new AnnotationConfigApplicationContext(BeanA.class, BeanB.class);
+        BeanA beanA = ac.getBean(BeanA.class); // getBean() 메소드는 타입을 이용해서 빈을 찾아올 수 있다.
+        assertThat(beanA.beanB, is(notNullValue()));
+    }
+
+    /*
+    * 빈으로 등록할 애노테이션 설정을 가진 클래스를 스테틱 클래스로 정의한다.
+    * 빈 스캔을 할 것은 아니기 때문에 자동등록되는 클래스라고 하더라도 @Component는 굳이 필요 없다.
+    * 빈의 이름을 지정할 필요가 있으면 @Component("beanname")이나 @Named("beanname")을 붙여준다.
+    * */
+    public static class BeanA { @Autowired BeanB beanB;}
+    public static class BeanB {}
 }

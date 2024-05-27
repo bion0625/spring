@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd"
+       default-autowire="byName">
+    <!--이 문서의 모든 <bean>태그의 기본 자동와이어링 방식이 '이름에 의한(byName) 것으로 바뀐다.
+    따라서 <bean>에는 autowire="" 선언을 넣어줄 필요가 없다.-->
+
+<!--    <bean id="hello" class="springbook.learningtest.spring.ioc.xml.autowiring.bean.Hello" autowire="byName">-->
+    <bean id="hello" class="springbook.learningtest.spring.ioc.xml.autowiring.bean.Hello">
+        <property name="name" value="autowiringSpringByName"/>
+<!--        <property name="printer" ref="printer"/>은 생략됐다. 자동와이어링을 통해 컨테이너가 자동으로 추가해준다.-->
+    </bean>
+    <bean id="printer" class="springbook.learningtest.spring.ioc.xml.autowiring.bean.StringPrinter"/>
+</beans>
