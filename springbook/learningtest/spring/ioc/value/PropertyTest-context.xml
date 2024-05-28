@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <bean id="hello" class="springbook.learningtest.spring.ioc.value.bean.Hello">
+        <property name="name" value="Everyone"/>
+        <property name="flag" value="true"/>
+        <property name="rate" value="1.2"/>
+        <property name="intarr" value="1,2,3,4"/>
+        <property name="names">
+            <list>
+                <value>Spring</value>
+                <value>Io</value>
+                <value>DI</value>
+            </list>
+        </property>
+        <property name="ages">
+            <map>
+                <entry key="Kim" value="30"/>
+                <entry key="Lee" value="35"/>
+                <entry key="Ahn" value="40"/>
+            </map>
+        </property>
+        <property name="setting">
+            <props>
+                <prop key="username">Spring</prop>
+                <prop key="password">Book</prop>
+            </props>
+        </property>
+
+        <property name="beans">
+            <list>
+                <ref bean="hello"/>
+                <ref bean="printer"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="printer" class="springbook.learningtest.spring.ioc.value.bean.StringPrinter"/>
+
+    <bean id="hello2" class="springbook.learningtest.spring.ioc.value.bean.Hello">
+        <property name="names" ref="names"/>
+        <property name="ages" ref="ages"/>
+        <property name="setting" ref="setting"/>
+    </bean>
+
+    <util:list id="names">
+        <value>Spring2</value>
+        <value>Io2</value>
+        <value>DI2</value>
+    </util:list>
+
+    <util:map id="ages" map-class="java.util.TreeMap">
+        <entry key="Kim2" value="30"/>
+        <entry key="Lee2" value="35"/>
+        <entry key="Ahn2" value="40"/>
+    </util:map>
+
+<!--    <util:properties id="setting">-->
+<!--        <prop key="username2">Spring2</prop>-->
+<!--        <prop key="password2">Book2</prop>-->
+<!--    </util:properties>-->
+
+    <util:properties id="setting" location="classpath:setting.properties"/>
+
+    <bean id="hello3" class="springbook.learningtest.spring.ioc.value.bean.Hello">
+        <property name="names"><null/></property>
+        <property name="name" value=""/>
+    </bean>
+
+    <bean id="hello4" class="springbook.learningtest.spring.ioc.value.bean.Hello">
+        <property name="name" value="#{hello.name}"/>
+    </bean>
+
+<!--    conversionService라는 이름의 빈으로 ConversionService 타입의 빈으로 등록하면 컨테이너가 자동인식해서 PropertyEditor를 대신해서 사용한다.-->
+    <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
+        <property name="converters">
+            <list>
+                <!--직접 작업한 타입 변환기를 등록할 수 있다.
+                기본적으로 등록된 변환 타입에 추가돼서 value, @Value의 값을 변환하는데 사용된다.-->
+<!--                <bean class="springbook.converter.MyTypeConverter"/>-->
+            </list>
+        </property>
+    </bean>
+    <context:component-scan base-package="springbook.learningtest.spring.ioc.value"/>
+    <context:property-placeholder location="classpath:database.properties"/>
+
+</beans>
