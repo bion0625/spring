@@ -9,3 +9,9 @@ create table users(
     login int not null,
     recommend int not null
 );
+
+create table member(
+      id varchar(10) primary key,
+      name varchar(20) not null,
+      point int null
+);
