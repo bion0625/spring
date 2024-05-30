@@ -13,5 +13,5 @@ create table users(
 create table member(
       id varchar(10) primary key,
       name varchar(20) not null,
-      point int null
+      point float null
 );
