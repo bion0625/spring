@@ -15,4 +15,12 @@
         <property name="password" value="#{dbdrops['db.password']}"/>
     </bean>
 
+    <bean id="memberDao" class="springbook.learningtest.spring.jdbc.MemberDao">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <bean id="registerDao" class="springbook.learningtest.spring.jdbc.RegisterDao">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
 </beans>

@@ -1,25 +1,19 @@
 package springbook.learningtest.spring.jdbc;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import javax.sql.DataSource;
-
 @Repository
-public class RegisterDao {
+public class RegisterDao extends AbstractSimpleJdbcDaoSupport {
 
     SimpleJdbcInsert registerInsert;
-    SimpleJdbcTemplate jdbcTemplate;
 
-    @Autowired
-    public void init(DataSource dataSource) {
-        this.registerInsert = new SimpleJdbcInsert(dataSource)
+    @Override
+    protected void initJdbcOjects() {
+        this.registerInsert = new SimpleJdbcInsert(getDataSource())
                 .withTableName("register")
                 .usingGeneratedKeyColumns("id");
-        this.jdbcTemplate = new SimpleJdbcTemplate(dataSource);
     }
 
     public Integer save(String name) {
@@ -27,6 +21,6 @@ public class RegisterDao {
     }
 
     public String findNameById(int id) {
-        return jdbcTemplate.queryForObject("select name from register where id = ?", String.class, id);
+        return simpleJdbcTemplate.queryForObject("select name from register where id = ?", String.class, id);
     }
 }

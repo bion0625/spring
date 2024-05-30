@@ -1,6 +1,5 @@
 package springbook.learningtest.spring.jdbc;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -8,27 +7,22 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 @Repository
-public class MemberDao {
-    SimpleJdbcTemplate simpleJdbcTemplate;
-
+public class MemberDao extends AbstractSimpleJdbcDaoSupport {
     SimpleJdbcInsert jdbcInsert;
 
     SimpleJdbcCall jdbcCall;
 
-    @Autowired
-    public void init(DataSource dataSource) {
-        this.simpleJdbcTemplate = new SimpleJdbcTemplate(dataSource);
-        this.jdbcInsert = new SimpleJdbcInsert(dataSource).withTableName("member");
-        this.jdbcCall = new SimpleJdbcCall(dataSource).withFunctionName("find_name");
+    @Override
+    protected void initJdbcOjects() {
+        this.jdbcInsert = new SimpleJdbcInsert(getDataSource()).withTableName("member");
+        this.jdbcCall = new SimpleJdbcCall(getDataSource()).withFunctionName("find_name");
     }
 
     public void deleteAll() {
