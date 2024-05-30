@@ -19,12 +19,15 @@ public class jdbcTest {
     @Autowired
     MemberDao memberDao;
 
+    @Autowired
+    RegisterDao registerDao;
+
     @Test
-    public void getAll() {
+    public void simpleJdbcTemplateTest() {
         memberDao.deleteAll();
         assertThat(memberDao.findAllCount(), is(0));
 
-        memberDao.testSaveOne();
+        memberDao.testSaveTwo();
         assertThat(memberDao.findAllCount(), is(2));
         assertThat(memberDao.findCountThanPoint(3), is(1));
 
@@ -77,5 +80,16 @@ public class jdbcTest {
         assertThat(list.get(1).get("id"), is("2"));
         assertThat(list.get(1).get("name"), is("Double2"));
         assertThat(list.get(1).get("point"), is(1.2F));
+    }
+
+    @Test
+    public void simpleJdbcInsertTest() {
+        memberDao.save("testName", 0.1);
+        Map<String, Object> map = memberDao.findByName("testName");
+        assertThat(map.get("name"), is("testName"));
+        assertThat(map.get("point"), is(0.1F));
+
+        Integer id = registerDao.save("Spring");
+        assertThat(registerDao.findNameById(id), is("Spring"));
     }
 }

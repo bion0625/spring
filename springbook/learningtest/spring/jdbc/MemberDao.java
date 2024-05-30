@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -18,16 +19,24 @@ import java.util.Map;
 public class MemberDao {
     SimpleJdbcTemplate simpleJdbcTemplate;
 
+    SimpleJdbcInsert jdbcInsert;
+
     @Autowired
     public void init(DataSource dataSource) {
         this.simpleJdbcTemplate = new SimpleJdbcTemplate(dataSource);
+        this.jdbcInsert = new SimpleJdbcInsert(dataSource).withTableName("member");
     }
 
     public void deleteAll() {
         this.simpleJdbcTemplate.update("delete from member");
     }
 
-    public void testSaveOne() {
+    public void save(String name, double point) {
+        Member member = new Member(String.valueOf(findAllCount() + 1), name, point);
+        jdbcInsert.execute(new BeanPropertySqlParameterSource(member));
+    }
+
+    public void testSaveTwo() {
 //        this.simpleJdbcTemplate.update(
 //                "insert into member(id, name, point) VALUES (?, ?, ?)",
 //                "1", "Spring", 3.5);

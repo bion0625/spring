@@ -15,3 +15,8 @@ create table member(
       name varchar(20) not null,
       point float null
 );
+
+create table register(
+    id int primary key auto_increment,
+    name varchar(100) not null
+);
