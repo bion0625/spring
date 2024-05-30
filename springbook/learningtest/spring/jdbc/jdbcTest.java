@@ -84,12 +84,19 @@ public class jdbcTest {
 
     @Test
     public void simpleJdbcInsertTest() {
+        memberDao.deleteAll();
+
         memberDao.save("testName", 0.1);
         Map<String, Object> map = memberDao.findByName("testName");
+        String testId = (String) map.get("id");
         assertThat(map.get("name"), is("testName"));
         assertThat(map.get("point"), is(0.1F));
 
         Integer id = registerDao.save("Spring");
         assertThat(registerDao.findNameById(id), is("Spring"));
+
+        assertThat(memberDao.callNameById(testId), is("testName"));
+
+
     }
 }

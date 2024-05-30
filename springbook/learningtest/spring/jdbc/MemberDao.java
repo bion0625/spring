@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -21,10 +22,13 @@ public class MemberDao {
 
     SimpleJdbcInsert jdbcInsert;
 
+    SimpleJdbcCall jdbcCall;
+
     @Autowired
     public void init(DataSource dataSource) {
         this.simpleJdbcTemplate = new SimpleJdbcTemplate(dataSource);
         this.jdbcInsert = new SimpleJdbcInsert(dataSource).withTableName("member");
+        this.jdbcCall = new SimpleJdbcCall(dataSource).withFunctionName("find_name");
     }
 
     public void deleteAll() {
@@ -101,5 +105,9 @@ public class MemberDao {
         list.add(new Object[] {names[1], ids[1]});
         System.out.println(names[1] + "/" + ids[1]);
         this.simpleJdbcTemplate.batchUpdate("update member set name = ? where id = ?", list);
+    }
+
+    public String callNameById(String id) {
+        return this.jdbcCall.executeFunction(String.class, id);
     }
 }

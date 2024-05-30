@@ -10,6 +10,7 @@ services:
       MYSQL_ROOT_PASSWORD: admin
       TZ: Asia/Seoul
     command:
+      - --log_bin_trust_function_creators=1
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
     volumes:
