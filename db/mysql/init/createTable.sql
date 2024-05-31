@@ -1,4 +1,3 @@
--- 유저 테이블 생성
 
 create table users(
     id varchar(10) primary key,
@@ -10,10 +9,16 @@ create table users(
     recommend int not null
 );
 
-create table member(
-      id varchar(10) primary key,
+create table MEMBER(
+      id int(10) primary key,
       name varchar(20) not null,
       point float null
+);
+
+create table member(
+       id varchar(10) primary key,
+       name varchar(20) not null,
+       point float null
 );
 
 create table register(
