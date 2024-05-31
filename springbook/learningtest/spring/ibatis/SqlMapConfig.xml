@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMapConfig
+PUBLIC "-/ibatis.apache.org//DTO SQL Map Config 2.0//EN"
+"http://ibatis.apache.org/dtd/sql-map-config-2.dtd">
+
+<sqlMapConfig>
+    <!--매핑 정보를 담은 파일의 클래스 패스를 지정한다. 매핑파일마다 <sqlMap> 태그를 추가하면 된다.-->
+    <sqlMap resource="springbook/learningtest/spring/ibatis/Member.xml"/>
+</sqlMapConfig>

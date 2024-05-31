@@ -4,15 +4,15 @@ public class Member {
 
     public Member() {}
 
-    private String id;
+    private int id;
     private String name;
     private double point;
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public String getId() {
+    public int getId() {
         return this.id;
     }
 
@@ -32,7 +32,7 @@ public class Member {
         return this.point;
     }
 
-    public Member(String id, String name, double point) {
+    public Member(int id, String name, double point) {
         this.id = id;
         this.name = name;
         this.point = point;

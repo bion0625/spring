@@ -30,7 +30,7 @@ public class MemberDao extends AbstractSimpleJdbcDaoSupport {
     }
 
     public void save(String name, double point) {
-        Member member = new Member(String.valueOf(findAllCount() + 1), name, point);
+        Member member = new Member(findAllCount() + 1, name, point);
         jdbcInsert.execute(new BeanPropertySqlParameterSource(member));
     }
 
@@ -62,7 +62,7 @@ public class MemberDao extends AbstractSimpleJdbcDaoSupport {
         return this.simpleJdbcTemplate.queryForInt("select count(*) from member where point > :min", new MapSqlParameterSource("min", min));
     }
 
-    public String findNameById(String id) {
+    public String findNameById(int id) {
         try{
             return this.simpleJdbcTemplate.queryForObject("select name from member where id = ?", String.class, id);
         } catch (EmptyResultDataAccessException e) {
@@ -89,11 +89,11 @@ public class MemberDao extends AbstractSimpleJdbcDaoSupport {
     public void updateAllPoint(String[] names, double[] points) {
         this.simpleJdbcTemplate.batchUpdate("update member set point = :point where name = :name", new SqlParameterSource[]{
                 new MapSqlParameterSource().addValue("name", names[0]).addValue("point", points[0]),
-                new BeanPropertySqlParameterSource(new Member("2", names[1], points[1]))
+                new BeanPropertySqlParameterSource(new Member(2, names[1], points[1]))
         });
     }
 
-    public void updataAllNameById(String[] ids, String[] names) {
+    public void updataAllNameById(int[] ids, String[] names) {
         List<Object[]> list = new ArrayList<>();
         list.add(new Object[] {names[0], ids[0]});
         list.add(new Object[] {names[1], ids[1]});

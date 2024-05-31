@@ -15,7 +15,7 @@ import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration
-public class jdbcTest {
+public class JdbcTest {
     @Autowired
     MemberDao memberDao;
 
@@ -31,21 +31,21 @@ public class jdbcTest {
         assertThat(memberDao.findAllCount(), is(2));
         assertThat(memberDao.findCountThanPoint(3), is(1));
 
-        assertThat(memberDao.findNameById("0"), is(nullValue()));
-        assertThat(memberDao.findNameById("1"), is("Spring"));
-        assertThat(memberDao.findNameById("2"), is("Spring2"));
+        assertThat(memberDao.findNameById(0), is(nullValue()));
+        assertThat(memberDao.findNameById(1), is("Spring"));
+        assertThat(memberDao.findNameById(2), is("Spring2"));
 
         Member member = memberDao.findById("1");
-        assertThat(member.getId(), is("1"));
+        assertThat(member.getId(), is(1));
         assertThat(member.getName(), is("Spring"));
         assertThat(member.getPoint(), is(3.5));
 
         List<Member> all = memberDao.findAllGreateThanPoint(0);
         assertThat(all.size(), is(2));
-        assertThat(all.get(0).getId(), is("1"));
+        assertThat(all.get(0).getId(), is(1));
         assertThat(all.get(0).getName(), is("Spring"));
         assertThat(all.get(0).getPoint(), is(3.5));
-        assertThat(all.get(1).getId(), is("2"));
+        assertThat(all.get(1).getId(), is(2));
         assertThat(all.get(1).getName(), is("Spring2"));
         assertThat(all.get(1).getPoint(), is(3.0));
 
@@ -71,7 +71,7 @@ public class jdbcTest {
         assertThat(list.get(1).get("name"), is("Spring2"));
         assertThat(list.get(1).get("point"), is(1.2F));
 
-        memberDao.updataAllNameById(new String[] {"1", "2"}, new String[] {"Double", "Double2"});
+        memberDao.updataAllNameById(new int[] {1, 2}, new String[] {"Double", "Double2"});
         list = memberDao.searchByName("Double");
         assertThat(list.size(), is(2));
         assertThat(list.get(0).get("id"), is("1"));

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-/ibatis.apache.org//DTO SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Member">
+    <!--파라미터와 결과 매핑에 사용할 클래스의 별칭을 등록한다.-->
+    <typeAlias alias="Member" type="springbook.learningtest.spring.jdbc.Member"/>
+
+    <!--코드에서 사용할 SQL의 아이디를 지정한다.-->
+    <delete id="deleteMemberAll">
+        /*실행될 SQL*/
+        delete from member
+    </delete>
+
+    <!--SQL의 이름 치환자에 매핑할 파라미터 타입-->
+    <insert id="insertMember" parameterClass="Member">
+        /*이름 치환자 파라미터 오브젝트의 프로퍼티 값으로 대체된다.*/
+        insert into member (id, name, point) values (#id#, #name#, #point#)
+    </insert>
+
+    <!--실행 결과를 담을 클래스, 각 로우의 칼럼 값을 프로퍼티에 넣어 준다.-->
+    <select id="findMemberById" parameterClass="int" resultClass="Member">
+        select * from member where id = #id#
+    </select>
+
+    <select id="findMembers" resultClass="Member">
+        select * from member order by id
+    </select>
+
+    <select id="searchMemberByName" parameterClass="java.lang.String" resultClass="Member">
+        select * from member where name like #name#
+    </select>
+
+    <select id="searchMemberByPoint" parameterClass="java.lang.Double" resultClass="Member">
+        select * from member where point >= #point#
+    </select>
+</sqlMap>
