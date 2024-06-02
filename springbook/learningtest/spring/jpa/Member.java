@@ -52,4 +52,12 @@ public class Member {
     public double getPoint() {
         return this.point;
     }
+
+    public Member(int id, String name, double point) {
+        this.id = id;
+        this.name = name;
+        this.point = point;
+    }
+
+    public Member() {}
 }
