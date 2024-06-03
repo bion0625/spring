@@ -1,0 +1,17 @@
+<!--<?xml version="1.0" encoding="utf-8" ?>-->
+<!--<!DOCTYPE hibernate-configuration PUBLIC-->
+<!--        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"-->
+<!--        "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">-->
+
+<!--<hibernate-configuration>-->
+<!--    <session-factory>-->
+<!--        &lt;!&ndash;sessionFactory가 참고할 프로퍼티 정보를 넣는다.&ndash;&gt;-->
+<!--        <property name="dialect">org.hibernate.dialect.MySQLDialect</property>-->
+<!--        <property name="cache.provider_class">org.hibernate.cache.NoCacheProvider</property>-->
+<!--        <property name="show_sql">true</property>-->
+<!--        <property name="hbm2ddl.auto">update</property>-->
+
+<!--        &lt;!&ndash;매핑파일의 위치를 지정한다. 하나 이상의 매핑파일을 사용할 수 있다.&ndash;&gt;-->
+<!--        <mapping resource="springbook/learningtest/spring/hibernate/Member.hbm.xml"/>-->
+<!--    </session-factory>-->
+<!--</hibernate-configuration>-->
