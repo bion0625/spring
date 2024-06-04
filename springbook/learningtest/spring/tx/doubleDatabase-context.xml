@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <util:properties id="dbdrops" location="classpath:database.properties"/>
+    <bean id="dataSource1" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
+        <property name="driverClass" value="#{dbdrops['db.driverClass']}"/>
+        <property name="url" value="#{dbdrops['db.url']}"/>
+        <property name="username" value="#{dbdrops['db.username']}"/>
+        <property name="password" value="#{dbdrops['db.password']}"/>
+    </bean>
+
+    <bean id="dataSource2" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
+        <property name="driverClass" value="#{dbdrops['db.driverClass']}"/>
+        <property name="url" value="#{dbdrops['db.url']}"/>
+        <property name="username" value="#{dbdrops['db.username']}"/>
+        <property name="password" value="#{dbdrops['db.password']}"/>
+    </bean>
+
+    <bean id="memberDao1" class="springbook.learningtest.spring.tx.MemberDaoByJdbc1">
+        <property name="dataSource" ref="dataSource1"/>
+    </bean>
+
+    <bean id="memberDao2" class="springbook.learningtest.spring.tx.MemberDaoByJdbc2">
+        <property name="dataSource" ref="dataSource2"/>
+    </bean>
+
+    <bean id="transactionManager1" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource1"/>
+    </bean>
+
+    <bean id="transactionManager2" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource1"/>
+    </bean>
+
+</beans>
