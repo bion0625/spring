@@ -14,6 +14,7 @@ import springbook.learningtest.spring.jdbc.MemberDao;
 import springbook.learningtest.spring.jpa.Member;
 import springbook.learningtest.spring.jpa.MemberTemplateDao;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -96,5 +97,53 @@ public class TxTest {
         memberDao1.save("jdbc1Test", 3.1);
         String name = memberDao2.findNameById(1);
         assertThat(name, is("jdbc1Test"));
+    }
+
+    @Test
+    public void memberServiceTest() {
+        List<springbook.learningtest.spring.jdbc.Member> members = new ArrayList<>();
+        members.add(new springbook.learningtest.spring.jdbc.Member(1, "test1", 1.1));
+        members.add(new springbook.learningtest.spring.jdbc.Member(2, "test2", 2.1));
+        members.add(new springbook.learningtest.spring.jdbc.Member(3, "test3", 3.1));
+
+        ApplicationContext ac = new GenericXmlApplicationContext("springbook/learningtest/spring/tx/jdbc-context.xml");
+        MemberService memberService = ac.getBean(MemberService.class);
+        memberService.addMembers(members);
+
+        MemberDao memberDao = ac.getBean(MemberDao.class);
+
+        assertThat(memberDao.findAllCount(), is(3));
+
+        springbook.learningtest.spring.jdbc.Member member1 = memberDao.findById("1");
+        springbook.learningtest.spring.jdbc.Member member2 = memberDao.findById("2");
+        springbook.learningtest.spring.jdbc.Member member3 = memberDao.findById("3");
+
+        assertThat(member1.getId(), is(1));
+        assertThat(member1.getName(), is("test1"));
+        assertThat(member1.getPoint(), is(1.1));
+
+        assertThat(member2.getId(), is(2));
+        assertThat(member2.getName(), is("test2"));
+        assertThat(member2.getPoint(), is(2.1));
+
+        assertThat(member3.getId(), is(3));
+        assertThat(member3.getName(), is("test3"));
+        assertThat(member3.getPoint(), is(3.1));
+    }
+
+    @Test
+    public void txAndAopTest() {
+        ApplicationContext ac = new GenericXmlApplicationContext("springbook/learningtest/spring/tx/txAndAop-context.xml");
+        springbook.learningtest.spring.tx.MemberDao memberDao = ac.getBean(springbook.learningtest.spring.tx.MemberDao.class);
+        memberDao.deleteAll();
+        assertThat(memberDao.count(), is(0L));
+
+        List<springbook.learningtest.spring.jdbc.Member> members = new ArrayList<>();
+        members.add(new springbook.learningtest.spring.jdbc.Member(1, "test1", 1.1));
+        members.add(new springbook.learningtest.spring.jdbc.Member(2, "test2", 2.1));
+        members.add(new springbook.learningtest.spring.jdbc.Member(3, "test3", 3.1));
+        memberDao.add(members);
+
+        assertThat(memberDao.count(), is(3L));
     }
 }
