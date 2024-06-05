@@ -194,4 +194,22 @@ public class TxTest {
 
         assertThat(memberDao.count(), is(3L));
     }
+
+    @Test
+    @Transactional
+    public void jtxTransactionTest() {
+        ApplicationContext ac = new GenericXmlApplicationContext("springbook/learningtest/spring/tx/jtx-context.xml");
+        TransactionalMemberDao memberDao1 = ac.getBean("memberDao1", TransactionalMemberDao.class);
+        TransactionalMemberDao memberDao2 = ac.getBean("memberDao1", TransactionalMemberDao.class);
+        memberDao1.deleteAll();
+        assertThat(memberDao1.count(), is(0L));
+
+        List<springbook.learningtest.spring.jdbc.Member> members = new ArrayList<>();
+        members.add(new springbook.learningtest.spring.jdbc.Member(1, "test1", 1.1));
+        members.add(new springbook.learningtest.spring.jdbc.Member(2, "test2", 2.1));
+        members.add(new springbook.learningtest.spring.jdbc.Member(3, "test3", 3.1));
+        memberDao2.add(members);
+
+        assertThat(memberDao1.count(), is(3L));
+    }
 }

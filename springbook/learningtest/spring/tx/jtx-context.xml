@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <bean id="atomikosTransactionManager" class="com.atomikos.icatch.jta.UserTransactionManager"
+          init-method="init" destroy-method="close">
+        <property name="forceShutdown"><value>true</value></property>
+    </bean>
+
+    <bean id="atomikosUserTransaction" class="com.atomikos.icatch.jta.UserTransactionImp">
+        <property name="transactionTimeout"><value>300</value></property>
+    </bean>
+
+    <bean id="transactionManager" class="org.springframework.transaction.jta.JtaTransactionManager">
+        <property name="transactionManager" ref="atomikosTransactionManager"/>
+        <property name="userTransaction" ref="atomikosUserTransaction"/>
+    </bean>
+
+    <bean id="dataSource1" class="com.atomikos.jdbc.AtomikosDataSourceBean"
+          init-method="init" destroy-method="close">
+        <!--다른 dataSource의 리소스 이름과 중복되지 않는 고유한 이름을 사용한다.-->
+        <property name="uniqueResourceName" value="MYSQLXA1"/>
+        <!--DB에서 제공되는 javax.sql.XADataSource 구현 드라이버 클래스를 사용한다.-->
+        <property name="xaDataSourceClassName" value="com.mysql.jdbc.jdbc2.optional.MysqlXADataSource"/>
+        <property name="xaProperties">
+            <props>
+                <prop key="user">root</prop>
+                <prop key="password">admin</prop>
+                <prop key="url">jdbc:mysql://localhost:3307/testdb</prop>
+            </props>
+        </property>
+        <property name="poolSize" value="1"/>
+    </bean>
+
+    <bean id="dataSource2" class="com.atomikos.jdbc.AtomikosDataSourceBean"
+          init-method="init" destroy-method="close">
+        <property name="uniqueResourceName" value="MYSQLXA2"/>
+        <property name="xaDataSourceClassName" value="com.mysql.jdbc.jdbc2.optional.MysqlXADataSource"/>
+        <property name="xaProperties">
+            <props>
+                <prop key="user">root</prop>
+                <prop key="password">admin</prop>
+                <prop key="url">jdbc:mysql://localhost:3307/testdb</prop>
+            </props>
+        </property>
+        <property name="poolSize" value="1"/>
+    </bean>
+
+    <bean id="memberDao1" class="springbook.learningtest.spring.tx.TransactionalMemberDaoImpl">
+        <property name="dataSource" ref="dataSource1"/>
+    </bean>
+
+    <bean id="memberDao2" class="springbook.learningtest.spring.tx.TransactionalMemberDaoImpl">
+        <property name="dataSource" ref="dataSource2"/>
+    </bean>
+
+    <tx:annotation-driven/>
+
+</beans>
