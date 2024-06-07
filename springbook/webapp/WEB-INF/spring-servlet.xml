@@ -7,5 +7,5 @@
 
     <context:annotation-config/>
 
-    <bean name="/hello" class="main.temp.HelloController"/>
+    <bean name="/hello" class="springbook.temp.HelloController"/>
 </beans>

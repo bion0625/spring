@@ -9,7 +9,7 @@
 
 <%@ page import="org.springframework.context.ApplicationContext" %>
 <%@ page import="org.springframework.web.context.support.WebApplicationContextUtils" %>
-<%@ page import="main.temp.HelloSpring" %>
+<%@ page import="springbook.temp.HelloSpring" %>
 <html>
 <head>
     <title>Title</title>
@@ -20,7 +20,7 @@
             request.getSession().getServletContext());
     HelloSpring helloSpring = context.getBean(HelloSpring.class);
 
-    out.println(helloSpring.sayHello("Root Context"));
+    System.out.println(helloSpring.sayHello("Root Context"));
 %>
 </body>
 </html>

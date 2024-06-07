@@ -1,4 +1,4 @@
-package main.temp;
+package springbook.temp;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.ModelAndView;
