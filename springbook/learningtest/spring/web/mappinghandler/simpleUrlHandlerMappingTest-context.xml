@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <!--properties 타입으로 url과 빈 이름의 매핑정보를 지정할 수 있는 프로퍼티다.
+        Map 타입을 선호한다면 urlMap을 이용할 수 있다.-->
+        <property name="mappings">
+<!--            <props>-->
+<!--                &lt;!&ndash;URL과 컨트롤러 빈 이름 사이의 매핑 정보.-->
+<!--                URL에는 *,**,? 등의 와일드카드를 사용할 수 있다.&ndash;&gt;-->
+<!--                <prop key="/hello">helloController</prop>-->
+<!--                <prop key="/my">myController</prop>-->
+<!--            </props>-->
+            <value>
+                /hello=helloController
+                /my=myController
+            </value>
+        </property>
+    </bean>
+
+    <!--매핑된 컨트롤러-->
+    <bean id="helloController" class="springbook.learningtest.spring.web.controllers.HelloController"/>
+    <bean id="myController" class="springbook.learningtest.spring.web.mappinghandler.MyController"/>
+
+</beans>

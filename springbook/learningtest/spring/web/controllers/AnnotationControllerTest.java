@@ -5,8 +5,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter;
-import org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping;
 import springbook.learningtest.spring.web.AbstractDispatcherServletTest;
 
 import javax.servlet.ServletException;
@@ -16,7 +14,7 @@ public class AnnotationControllerTest extends AbstractDispatcherServletTest {
 
     @Test
     public void annotationControllerTest() throws ServletException, IOException {
-        setClasses(AnnotationMethodHandlerAdapter.class, DefaultAnnotationHandlerMapping.class, HelloController.class);
+        setClasses(HelloController.class);
         initRequest("/hello").addParameter("name", "Spring")
                 .runService()
                 .assertModel("message", "Hello Spring")
