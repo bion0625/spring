@@ -20,6 +20,6 @@ public class HelloByMarshallController implements Controller {
         model.put("info", new Info("Hello " + req.getParameter("name")));
 
         if ("xml".equals(req.getParameter("type"))) return new ModelAndView(helloMarshallingView, model);
-        else return new ModelAndView("/WEB-INF/view/hello.jsp", model);
+        else return new ModelAndView("/hello", model);
     }
 }

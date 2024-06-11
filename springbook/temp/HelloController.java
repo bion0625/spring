@@ -27,6 +27,6 @@ public class HelloController implements Controller {
         model.put("message", message);
 
         // 4. 뷰 지정
-        return new ModelAndView("/WEB-INF/view/hello.jsp", model);
+        return new ModelAndView("/hello", model);
     }
 }
