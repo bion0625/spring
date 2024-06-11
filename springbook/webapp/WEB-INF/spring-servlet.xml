@@ -8,4 +8,17 @@
     <context:annotation-config/>
 
     <bean name="/hello" class="springbook.temp.HelloController"/>
+
+    <bean id="marshaller" class="org.springframework.oxm.castor.CastorMarshaller"/>
+
+    <bean id="helloMarshallingView" class="org.springframework.web.servlet.view.xml.MarshallingView">
+        <property name="marshaller" ref="marshaller"/>
+        <property name="modelKey" value="info"/>
+    </bean>
+
+    <bean name="/helloByMarshaller" class="springbook.learningtest.spring.web.view.HelloByMarshallController"/>
+
+    <bean id="helloPdfView" class="springbook.learningtest.spring.web.view.HelloPdfView"/>
+
+    <bean name="/helloPdf" class="springbook.learningtest.spring.web.view.HelloAboutPdfController"/>
 </beans>

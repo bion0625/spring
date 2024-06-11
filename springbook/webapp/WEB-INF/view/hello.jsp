@@ -13,5 +13,6 @@
 </head>
 <body>
     ${message}
+    ${info.message}
 </body>
 </html>
