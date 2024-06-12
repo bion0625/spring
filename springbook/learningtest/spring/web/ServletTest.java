@@ -7,7 +7,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletConfig;
 import org.springframework.web.servlet.ModelAndView;
-import springbook.temp.HelloController;
+import springbook.learningtest.spring.web.hello.HelloController;
 import springbook.temp.HelloSpring;
 
 import javax.servlet.ServletException;
