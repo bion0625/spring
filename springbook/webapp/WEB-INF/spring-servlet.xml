@@ -64,4 +64,15 @@
     <!-- Define ObjectMapper if necessary (optional) -->
     <bean id="objectMapper" class="com.fasterxml.jackson.databind.ObjectMapper"/>
 
+    <context:component-scan base-package="springbook.learningtest.spring.web.exceptionhandler"/>
+
+    <bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+        <property name="exceptionMappings">
+            <props>
+                <prop key="java.lang.RuntimeException">runtimeexception</prop>
+            </props>
+        </property>
+        <property name="defaultErrorView" value="error/default"/>
+    </bean>
+
 </beans>
