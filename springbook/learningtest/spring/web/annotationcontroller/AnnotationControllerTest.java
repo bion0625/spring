@@ -1,16 +1,11 @@
 package springbook.learningtest.spring.web.annotationcontroller;
 
 import org.junit.Test;
-import springbook.learningtest.spring.web.AbstractDispatcherServletTest;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import java.io.IOException;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public class AnnotationControllerTest extends AbstractDispatcherServletTest {
+public class AnnotationControllerTest extends AbstractAnnotationControllerTest {
     @Test
     public void helloMethodTest() throws ServletException, IOException {
         setClasses(AnnotationController.class)
@@ -27,13 +22,6 @@ public class AnnotationControllerTest extends AbstractDispatcherServletTest {
                 .runService()
                 .assertViewName("myview")
                 .assertModel("info", "Spring/testAuth");
-    }
-
-    public AnnotationControllerTest setCookie(String name, String value) {
-        if (this.request == null)
-            throw new IllegalStateException("request가 초기화되지 않았습니다.");
-        this.request.setCookies(new Cookie(name, value));
-        return this;
     }
 
     @Test
@@ -145,13 +133,6 @@ public class AnnotationControllerTest extends AbstractDispatcherServletTest {
                 .assertViewName("headerBySimple/sampleHost/sampleKeepAlive");
     }
 
-    public AnnotationControllerTest addHeader(String name, String value) {
-        if (this.request == null)
-            throw new IllegalStateException("request가 초기화되지 않았습니다.");
-        this.request.addHeader(name, value);
-        return this;
-    }
-
     @Test
     public void modelAddAttributeTest() throws ServletException, IOException {
         setClasses(AnnotationController.class)
@@ -159,9 +140,27 @@ public class AnnotationControllerTest extends AbstractDispatcherServletTest {
         assertModelByString("user", "bumjin").assertViewName("addAttributeView");
     }
 
-    public AnnotationControllerTest assertModelByString(String name, String value) {
-        assertThat(this.getModelAndView().getModel().get(name).toString(), is(value));
-        return this;
+    @Test
+    public void modelAttributeTest() throws ServletException, IOException {
+        setClasses(AnnotationController.class)
+                .initRequest("/user/search")
+                .addParameter("id", "1")
+                .addParameter("name", "Spring")
+                .addParameter("level", "3")
+                .addParameter("email", "test@test.com")
+                .runService()
+                .assertViewName("search/1/Spring/3/test@test.com");
     }
 
+    @Test
+    public void modelAttributeByNoAnnotationTest() throws ServletException, IOException {
+        setClasses(AnnotationController.class)
+                .initRequest("/user/search/noAnnotation")
+                .addParameter("id", "1")
+                .addParameter("name", "Spring")
+                .addParameter("level", "3")
+                .addParameter("email", "test@test.com")
+                .runService()
+                .assertViewName("search/1/Spring/3/test@test.com");
+    }
 }

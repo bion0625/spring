@@ -3,6 +3,7 @@ package springbook.learningtest.spring.web.annotationcontroller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -98,5 +99,17 @@ public class AnnotationController {
         User user = new User("bumjin", "박범진", "p1", "test01@test.com", Level.BASIC, MIN_LOGCOUNT_FOR_SILVER-1, 0);
         model.addAttribute(user);
         return "addAttributeView";
+    }
+
+    @RequestMapping("/user/search")
+    public String search(@ModelAttribute UserSearch userSearch) {
+        return String.format("search/%d/%s/%d/%s",
+                userSearch.getId(), userSearch.getName(), userSearch.getLevel(), userSearch.getEmail());
+    }
+
+    @RequestMapping("/user/search/noAnnotation")
+    public String searchByNoAnnotation(UserSearch userSearch) {
+        return String.format("search/%d/%s/%d/%s",
+                userSearch.getId(), userSearch.getName(), userSearch.getLevel(), userSearch.getEmail());
     }
 }
