@@ -87,4 +87,9 @@ public class User{
             this.level = nextLevel;
         }
     }
+
+    @Override
+    public String toString() {
+        return this.id;
+    }
 }
