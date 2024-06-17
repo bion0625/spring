@@ -3,6 +3,7 @@ package springbook.learningtest.spring.web.annotationcontroller;
 import springbook.learningtest.spring.web.AbstractDispatcherServletTest;
 
 import javax.servlet.http.Cookie;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -34,6 +35,11 @@ public class AbstractAnnotationControllerTest extends AbstractDispatcherServletT
         if (list == null) {
             assertThat(0, is(userSize));
         } else assertThat(list.size(), is(userSize));
+        return this;
+    }
+
+    public AbstractAnnotationControllerTest assertContentAsString(String value) throws UnsupportedEncodingException {
+        assertThat(this.getContentAsString(), is(value));
         return this;
     }
 }

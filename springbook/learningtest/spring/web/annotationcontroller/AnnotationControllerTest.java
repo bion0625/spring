@@ -187,4 +187,50 @@ public class AnnotationControllerTest extends AbstractAnnotationControllerTest {
                 .runService()
                 .assertViewName("search/errors");
     }
+
+    @Test
+    public void modelAttributeMethodTest() throws ServletException, IOException {
+        setClasses(AnnotationController.class);
+        runService("/modelAttributeMethod/A")
+                .assertModel("code", "codeString")
+                .assertViewName("view/a");
+        runService("/modelAttributeMethod/B")
+                .assertModel("code", "codeString")
+                .assertViewName("view/b");
+    }
+
+    @Test
+    public void modelAndViewReturnTest() throws ServletException, IOException {
+        setClasses(AnnotationController.class)
+                .initRequest("/ModelAndView/hello")
+                .addParameter("name", "Spring")
+                .runService()
+                .assertViewName("/view/hello")
+                .assertModel("name", "Spring");
+    }
+
+    @Test
+    public void stringReturnTest() throws ServletException, IOException {
+        setClasses(AnnotationController.class)
+                .initRequest("/String/hello")
+                .addParameter("name", "Spring")
+                .runService()
+                .assertViewName("/view/hello")
+                .assertModel("name", "Spring");
+    }
+
+    @Test
+    public void noResponseBodyTest() throws ServletException, IOException {
+        setClasses(AnnotationController.class)
+                .runService("/no/responsebody")
+                .assertViewName("<html><body>Hello Spring</body></html>")
+                .getContentAsString();
+        assertContentAsString("");
+    }
+
+    @Test
+    public void responseBodyTest() throws ServletException, IOException {
+        setClasses(AnnotationController.class).runService("/responsebody");
+        assertContentAsString("<html><body>Hello Spring</body></html>");
+    }
 }

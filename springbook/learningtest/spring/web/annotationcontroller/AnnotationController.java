@@ -4,12 +4,8 @@ import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 import springbook.user.domain.Level;
 import springbook.user.domain.User;
 
@@ -21,7 +17,7 @@ import static springbook.user.service.UserServiceImpl.MIN_LOGCOUNT_FOR_SILVER;
 public class AnnotationController {
 
     @RequestMapping("/hello.html")
-    public void hello() {}
+    public void helloHtml() {}
 
     @RequestMapping("/complex")
     public String complex(@RequestParam("name") String name,
@@ -125,5 +121,43 @@ public class AnnotationController {
     public String errors(UserSearch userSearch, Errors errors) {
         if (errors.hasErrors()) return String.format("search/errors");
         else return String.format("search/%d", userSearch.getId());
+    }
+
+    @ModelAttribute("code")
+    public String code() {
+        return "codeString";
+    }
+
+    @RequestMapping("//modelAttributeMethod/A")
+    public String modelAttributeMethodA() {
+        return "view/a";
+    }
+
+    @RequestMapping("//modelAttributeMethod/B")
+    public String modelAttributeMethodB() {
+        return "view/b";
+    }
+
+    @RequestMapping("/ModelAndView/hello")
+    public ModelAndView modelAndViewHello(@RequestParam("name") String name, Model model) {
+        model.addAttribute("name", name);
+        return new ModelAndView("/view/hello");
+    }
+
+    @RequestMapping("/String/hello")
+    public String StringHello(String name, Model model) {
+        model.addAttribute("name", name);
+        return "/view/hello";
+    }
+
+    @RequestMapping("/no/responsebody")
+    public String noResponseBody() {
+        return "<html><body>Hello Spring</body></html>";
+    }
+
+    @RequestMapping("/responsebody")
+    @ResponseBody
+    public String responseBody() {
+        return "<html><body>Hello Spring</body></html>";
     }
 }
