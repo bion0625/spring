@@ -163,4 +163,28 @@ public class AnnotationControllerTest extends AbstractAnnotationControllerTest {
                 .runService()
                 .assertViewName("search/1/Spring/3/test@test.com");
     }
+
+    @Test
+    public void bindingResultTest() throws ServletException, IOException {
+        setClasses(AnnotationController.class)
+                .initRequest("/bindingResult")
+                .addParameter("id", "1")
+                .runService()
+                .assertViewName("search/1");
+        addParameter("id", "abcd")
+                .runService()
+                .assertViewName("search/bindingResult");
+    }
+
+    @Test
+    public void errorsTest() throws ServletException, IOException {
+        setClasses(AnnotationController.class)
+                .initRequest("/errors")
+                .addParameter("id", "1")
+                .runService()
+                .assertViewName("search/1");
+        addParameter("id", "abcd")
+                .runService()
+                .assertViewName("search/errors");
+    }
 }

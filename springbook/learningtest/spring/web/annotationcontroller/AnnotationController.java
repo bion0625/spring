@@ -2,6 +2,8 @@ package springbook.learningtest.spring.web.annotationcontroller;
 
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -111,5 +113,17 @@ public class AnnotationController {
     public String searchByNoAnnotation(UserSearch userSearch) {
         return String.format("search/%d/%s/%d/%s",
                 userSearch.getId(), userSearch.getName(), userSearch.getLevel(), userSearch.getEmail());
+    }
+
+    @RequestMapping("/bindingResult")
+    public String bindingResult(UserSearch userSearch, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) return String.format("search/bindingResult");
+        else return String.format("search/%d", userSearch.getId());
+    }
+
+    @RequestMapping("/errors")
+    public String errors(UserSearch userSearch, Errors errors) {
+        if (errors.hasErrors()) return String.format("search/errors");
+        else return String.format("search/%d", userSearch.getId());
     }
 }
