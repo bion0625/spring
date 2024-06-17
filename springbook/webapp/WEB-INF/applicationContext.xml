@@ -1,9 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-                        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+                        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+                        http://www.springframework.org/schema/context
+                        http://www.springframework.org/schema/context/spring-context-3.0.xsd
+                        http://www.springframework.org/schema/aop
+                        http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+                        http://www.springframework.org/schema/tx
+                        http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+                        http://www.springframework.org/schema/jdbc
+                        http://www.springframework.org/schema/jdbc/spring-jdbc.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <util:properties id="dbdrops" location="classpath:database.properties"/>
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
+        <property name="driverClass" value="#{dbdrops['db.driverClass']}"/>
+        <property name="url" value="#{dbdrops['db.url']}"/>
+        <property name="username" value="#{dbdrops['db.username']}"/>
+        <property name="password" value="#{dbdrops['db.password']}"/>
+    </bean>
+    <!--    <context:property-placeholder location="classpath:database.properties"/>-->
+    <!--    <bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">-->
+    <!--        <property name="driverClass" value="${db.driverClass}"/>-->
+    <!--        <property name="url" value="${db.url}"/>-->
+    <!--        <property name="username" value="${db.username}"/>-->
+    <!--        <property name="password" value="${db.password}"/>-->
+    <!--    </bean>-->
+    <bean id="userDao" class="springbook.user.dao.UserDaoJdbc">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="sqlService" ref="sqlService"/>
+    </bean>
+    <!--    <jdbc:embedded-database id="embeddedDatabase" type="HSQL">-->
+    <!--        <jdbc:script location="classpath:springbook/user/sqlservice/updatable/sqlRegistrySchema.sql"/>-->
+    <!--    </jdbc:embedded-database>-->
+    <bean id="unmarshaller" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+        <property name="contextPath" value="springbook.user.sqlservice.jaxb"/>
+    </bean>
+    <bean id="sqlRegistry" class="springbook.user.sqlservice.updatable.EmbeddedDbSqlRegistry">
+        <!--        <property name="dataSource" ref="embeddedDatabase"/>-->
+    </bean>
+    <bean id="sqlService" class="springbook.user.sqlservice.OxmSqlService">
+        <property name="unmarshaller" ref="unmarshaller"/>
+        <!--classpath는 디폴트이므로 생략 가능하다. 클래스패스 위치를 지정할 때는 클래스패스 루트로부터 절대 위치를 적어야 한다.-->
+        <property name="sqlmap" value="classpath:springbook/user/dao/sqlmap.xml"/>
+        <!--        <property name="sqlRegistry" ref="sqlRegistry"/>-->
+    </bean>
+    <bean id="dao" class="springbook.user.dao.UserDaoJdbc">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <bean id="mailSender" class="springbook.user.service.DummyMailSender"/>
+    <bean id="userService" class="springbook.user.service.UserServiceImpl">
+        <property name="userDao" ref="userDao"/>
+        <property name="mailSender" ref="mailSender"/>
+    </bean>
+    <!-- 스테틱 멤버 클래스는 $로 지정한다. 프로퍼티 정의를 포함해서 userService 빈의 설정을 상속받는다. -->
+    <bean id="testUserService" class="springbook.user.service.UserServiceTest$TestUserServiceImpl" parent="userService"/>
+    <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/>
+    <!-- @Transaction이 붙은 타입과 메소드에 트랜잭션 부가기능을 담은 프록시를 추가하도록 만들어주는 후처리기를 등록 -->
+    <tx:annotation-driven/>
+    <!-- 코드의 애노테이션을 이용해서 부가적인 빈 설정 또는 초기화 작업을 해주는 후처리기를 등록 -->
+    <context:annotation-config/>
 
     <bean id="helloSpring" class="springbook.temp.HelloSpring"/>
-
 </beans>
