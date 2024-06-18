@@ -1,4 +1,4 @@
-package springbook.learningtest.spring.web.annotationcontroller;
+package springbook.learningtest.spring.web.atmvc;
 
 public class UserSearch {
     private int id;

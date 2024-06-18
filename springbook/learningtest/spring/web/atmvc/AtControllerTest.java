@@ -1,21 +1,21 @@
-package springbook.learningtest.spring.web.annotationcontroller;
+package springbook.learningtest.spring.web.atmvc;
 
 import org.junit.Test;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
 
-public class AnnotationControllerTest extends AbstractAnnotationControllerTest {
+public class AtControllerTest extends AbstractAnnotationControllerTest {
     @Test
     public void helloMethodTest() throws ServletException, IOException {
-        setClasses(AnnotationController.class)
+        setClasses(AtController.class)
                 .runService("/hello.html")
                 .assertViewName("hello");
     }
 
     @Test
     public void complexMethodTest() throws ServletException, IOException {
-        setClasses(AnnotationController.class)
+        setClasses(AtController.class)
                 .initRequest("/complex")
                 .addParameter("name", "Spring");
         setCookie("auth", "testAuth")
@@ -26,18 +26,18 @@ public class AnnotationControllerTest extends AbstractAnnotationControllerTest {
 
     @Test
     public void pathVariableTest() throws ServletException, IOException {
-        setClasses(AnnotationController.class)
+        setClasses(AtController.class)
                 .runService("/user/view/10")
                 .assertViewName("view_10");
 
-        setClasses(AnnotationController.class)
+        setClasses(AtController.class)
                 .runService("/member/double/order/101")
                 .assertViewName("lookup/double/101");
     }
 
     @Test
     public void requestParamTest() throws ServletException, IOException {
-        setClasses(AnnotationController.class)
+        setClasses(AtController.class)
                 .initRequest("/param")
                     .addParameter("id", "11")
                     .addParameter("name", "Spring")
@@ -47,7 +47,7 @@ public class AnnotationControllerTest extends AbstractAnnotationControllerTest {
 
     @Test
     public void requestParamMapTest() throws ServletException, IOException {
-        setClasses(AnnotationController.class)
+        setClasses(AtController.class)
                 .initRequest("/param/map")
                 .addParameter("test", "k")
                 .addParameter("test1", "again")
@@ -57,11 +57,11 @@ public class AnnotationControllerTest extends AbstractAnnotationControllerTest {
 
     @Test
     public void requestParamRequiredTest() throws ServletException, IOException {
-        setClasses(AnnotationController.class)
+        setClasses(AtController.class)
                 .runService("/param/required")
                 .assertViewName("paramByRequired_0");
 
-        setClasses(AnnotationController.class)
+        setClasses(AtController.class)
                 .initRequest("/param/required").addParameter("id", "5")
                 .runService()
                 .assertViewName("paramByRequired_5");
@@ -69,7 +69,7 @@ public class AnnotationControllerTest extends AbstractAnnotationControllerTest {
 
     @Test
     public void simpleReqeustParamTest() throws ServletException, IOException {
-        setClasses(AnnotationController.class)
+        setClasses(AtController.class)
                 .initRequest("/param/simple").addParameter("id", "7")
                 .runService()
                 .assertViewName("paramBySimple_7");
@@ -77,7 +77,7 @@ public class AnnotationControllerTest extends AbstractAnnotationControllerTest {
 
     @Test
     public void simpleReqeustParamThanTest() throws ServletException, IOException {
-        setClasses(AnnotationController.class)
+        setClasses(AtController.class)
                 .initRequest("/param/simple/than").addParameter("id", "7")
                 .runService()
                 .assertViewName("paramBySimpleThan_7");
@@ -85,7 +85,7 @@ public class AnnotationControllerTest extends AbstractAnnotationControllerTest {
 
     @Test
     public void cookieTest() throws ServletException, IOException {
-        setClasses(AnnotationController.class)
+        setClasses(AtController.class)
                 .initRequest("/cookie");
         setCookie("auth", "authCookie")
                 .runService()
@@ -94,7 +94,7 @@ public class AnnotationControllerTest extends AbstractAnnotationControllerTest {
 
     @Test
     public void simpleCookieTest() throws ServletException, IOException {
-        setClasses(AnnotationController.class)
+        setClasses(AtController.class)
                 .initRequest("/cookie/simple");
         setCookie("auth", "authCookie")
                 .runService()
@@ -103,7 +103,7 @@ public class AnnotationControllerTest extends AbstractAnnotationControllerTest {
 
     @Test
     public void cookieCheckTest() throws ServletException, IOException {
-        setClasses(AnnotationController.class)
+        setClasses(AtController.class)
                 .initRequest("/cookie/check")
                 .runService()
                 .assertViewName("cookieCheck_default");
@@ -115,7 +115,7 @@ public class AnnotationControllerTest extends AbstractAnnotationControllerTest {
 
     @Test
     public void headerTest() throws ServletException, IOException {
-        setClasses(AnnotationController.class)
+        setClasses(AtController.class)
                 .runService("/header")
                 .assertViewName("header/defaultHost/default");
 
@@ -126,7 +126,7 @@ public class AnnotationControllerTest extends AbstractAnnotationControllerTest {
 
     @Test
     public void simpleHeaderTest() throws ServletException, IOException {
-        setClasses(AnnotationController.class)
+        setClasses(AtController.class)
                 .initRequest("/header/simple");
         addHeader("Host", "sampleHost").addHeader("Keep-Alive", "sampleKeepAlive")
                 .runService()
@@ -135,14 +135,14 @@ public class AnnotationControllerTest extends AbstractAnnotationControllerTest {
 
     @Test
     public void modelAddAttributeTest() throws ServletException, IOException {
-        setClasses(AnnotationController.class)
+        setClasses(AtController.class)
                 .runService("/addAttribute");
         assertModelByString("user", "bumjin").assertViewName("addAttributeView");
     }
 
     @Test
     public void modelAttributeTest() throws ServletException, IOException {
-        setClasses(AnnotationController.class)
+        setClasses(AtController.class)
                 .initRequest("/user/search")
                 .addParameter("id", "1")
                 .addParameter("name", "Spring")
@@ -154,7 +154,7 @@ public class AnnotationControllerTest extends AbstractAnnotationControllerTest {
 
     @Test
     public void modelAttributeByNoAnnotationTest() throws ServletException, IOException {
-        setClasses(AnnotationController.class)
+        setClasses(AtController.class)
                 .initRequest("/user/search/noAnnotation")
                 .addParameter("id", "1")
                 .addParameter("name", "Spring")
@@ -166,7 +166,7 @@ public class AnnotationControllerTest extends AbstractAnnotationControllerTest {
 
     @Test
     public void bindingResultTest() throws ServletException, IOException {
-        setClasses(AnnotationController.class)
+        setClasses(AtController.class)
                 .initRequest("/bindingResult")
                 .addParameter("id", "1")
                 .runService()
@@ -178,7 +178,7 @@ public class AnnotationControllerTest extends AbstractAnnotationControllerTest {
 
     @Test
     public void errorsTest() throws ServletException, IOException {
-        setClasses(AnnotationController.class)
+        setClasses(AtController.class)
                 .initRequest("/errors")
                 .addParameter("id", "1")
                 .runService()
@@ -190,7 +190,7 @@ public class AnnotationControllerTest extends AbstractAnnotationControllerTest {
 
     @Test
     public void modelAttributeMethodTest() throws ServletException, IOException {
-        setClasses(AnnotationController.class);
+        setClasses(AtController.class);
         runService("/modelAttributeMethod/A")
                 .assertModel("code", "codeString")
                 .assertViewName("view/a");
@@ -201,7 +201,7 @@ public class AnnotationControllerTest extends AbstractAnnotationControllerTest {
 
     @Test
     public void modelAndViewReturnTest() throws ServletException, IOException {
-        setClasses(AnnotationController.class)
+        setClasses(AtController.class)
                 .initRequest("/ModelAndView/hello")
                 .addParameter("name", "Spring")
                 .runService()
@@ -211,7 +211,7 @@ public class AnnotationControllerTest extends AbstractAnnotationControllerTest {
 
     @Test
     public void stringReturnTest() throws ServletException, IOException {
-        setClasses(AnnotationController.class)
+        setClasses(AtController.class)
                 .initRequest("/String/hello")
                 .addParameter("name", "Spring")
                 .runService()
@@ -221,7 +221,7 @@ public class AnnotationControllerTest extends AbstractAnnotationControllerTest {
 
     @Test
     public void noResponseBodyTest() throws ServletException, IOException {
-        setClasses(AnnotationController.class)
+        setClasses(AtController.class)
                 .runService("/no/responsebody")
                 .assertViewName("<html><body>Hello Spring</body></html>")
                 .getContentAsString();
@@ -230,7 +230,7 @@ public class AnnotationControllerTest extends AbstractAnnotationControllerTest {
 
     @Test
     public void responseBodyTest() throws ServletException, IOException {
-        setClasses(AnnotationController.class).runService("/responsebody");
+        setClasses(AtController.class).runService("/responsebody");
         assertContentAsString("<html><body>Hello Spring</body></html>");
     }
 }

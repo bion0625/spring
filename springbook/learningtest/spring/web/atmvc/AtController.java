@@ -1,4 +1,4 @@
-package springbook.learningtest.spring.web.annotationcontroller;
+package springbook.learningtest.spring.web.atmvc;
 
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -14,7 +14,7 @@ import java.util.Map;
 import static springbook.user.service.UserServiceImpl.MIN_LOGCOUNT_FOR_SILVER;
 
 @RequestMapping
-public class AnnotationController {
+public class AtController {
 
     @RequestMapping("/hello.html")
     public void helloHtml() {}

@@ -76,7 +76,7 @@
         <property name="defaultErrorView" value="error/default"/>
     </bean>
 
-    <bean class="springbook.learningtest.spring.web.annotationcontroller.UserController"/>
+    <bean class="springbook.learningtest.spring.web.atmvc.UserController"/>
 
     <mvc:annotation-driven/>
 </beans>

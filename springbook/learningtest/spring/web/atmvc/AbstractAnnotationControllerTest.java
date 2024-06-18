@@ -1,4 +1,4 @@
-package springbook.learningtest.spring.web.annotationcontroller;
+package springbook.learningtest.spring.web.atmvc;
 
 import springbook.learningtest.spring.web.AbstractDispatcherServletTest;
 

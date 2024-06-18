@@ -10,7 +10,7 @@ import springbook.learningtest.spring.web.AbstractDispatcherServletTest;
 import javax.servlet.ServletException;
 import java.io.IOException;
 
-public class AnnotationControllerTest extends AbstractDispatcherServletTest {
+public class AtControllerTest extends AbstractDispatcherServletTest {
 
     @Test
     public void annotationControllerTest() throws ServletException, IOException {
