@@ -13,13 +13,17 @@
 </head>
 <body>
     <form method="post">
-        <input name="id" type="text" disabled value="${user.id}">
-        <input name="name" type="text" value="${user.name}"/>
-        <input name="email" type="text" value="${user.email}"/>
-        <%--<input type="hidden" name="level" value="${user.level}"/>--%>
-        <%--<input type="hidden" name="password" value="${user.password}"/>
-        <input type="hidden" name="login" value="${user.login}"/>
-        <input type="hidden" name="recommend" value="${user.recommend}"/>--%>
+        <label>
+            <input name="id" type="text" disabled value="${currentUser.id}">
+        </label>
+        <br/>
+        <label>
+            <input name="name" type="text" value="${currentUser.name}"/>
+        </label>
+        <br/>
+        <label>
+            <input name="email" type="text" value="${currentUser.email}"/>
+        </label>
         <button type="submit">edit</button>
     </form>
 </body>

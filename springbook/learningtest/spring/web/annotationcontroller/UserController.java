@@ -9,7 +9,7 @@ import springbook.user.domain.User;
 import springbook.user.service.UserService;
 
 @RequestMapping
-@SessionAttributes("user")
+@SessionAttributes("currentUser")
 public class UserController {
 
     @Autowired
@@ -18,12 +18,9 @@ public class UserController {
     public UserController() {}
 
     @RequestMapping(value = "/user/add", method = RequestMethod.POST)
-    public String add(@ModelAttribute User user) {
-        user.setLevel(Level.BASIC);
-        user.setLogin(0);
-        user.setRecommend(0);
-        userService.add(user);
-        return "success";
+    public String add(@ModelAttribute("currentUser") User currentUser) {
+        userService.add(currentUser);
+        return "user/editSuccess";
     }
 
     @RequestMapping(value = "/users", method = RequestMethod.GET)
@@ -49,15 +46,25 @@ public class UserController {
 
     @RequestMapping(value = "/user/edit", method = RequestMethod.GET)
     public String form(@RequestParam String id, Model model) {
-        model.addAttribute("user", userService.get(id));
+        model.addAttribute("currentUser", userService.get(id));
         return "user/edit";
     }
 
     @RequestMapping(value = "/user/edit", method = RequestMethod.POST)
-    public String submit(@ModelAttribute User user, SessionStatus sessionStatus) {
-        this.userService.update(user);
+    public String submit(@ModelAttribute("currentUser") User currentUser, SessionStatus sessionStatus) {
+        this.userService.update(currentUser);
         // 현재 컨트롤러에 의해 세션에 저장된 정보를 모두 제거해준다.
         sessionStatus.setComplete();
         return "user/editSuccess";
+    }
+
+    @RequestMapping(value = "/user/add", method = RequestMethod.GET)
+    public String addFrom(Model model) {
+        User user = new User();
+        user.setLevel(Level.BASIC);
+        user.setLogin(0);
+        user.setRecommend(0);
+        model.addAttribute("currentUser", user);
+        return "user/add";
     }
 }
