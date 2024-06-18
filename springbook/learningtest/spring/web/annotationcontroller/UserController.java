@@ -36,7 +36,7 @@ public class UserController {
     }
 
     @RequestMapping("/user/update")
-    public String update(@ModelAttribute("currentuser") User user) {
+    public String update(@ModelAttribute User user) {
         user.setLevel(Level.BASIC);
         user.setLogin(0);
         user.setRecommend(0);
