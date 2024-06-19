@@ -78,6 +78,25 @@
 
     <bean class="springbook.learningtest.spring.web.atmvc.UserController"/>
     <bean class="springbook.learningtest.spring.web.atmvc.PrototypeBeanPropertyEditorController"/>
+    <bean class="springbook.learningtest.spring.web.atmvc.converter.ConverterController"/>
 
-    <mvc:annotation-driven/>
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+        <property name="webBindingInitializer" ref="webBindingInitializer"/>
+    </bean>
+
+    <bean id="webBindingInitializer" class="org.springframework.web.bind.support.ConfigurableWebBindingInitializer">
+        <property name="conversionService" ref="conversionService"/>
+    </bean>
+
+    <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean" primary="true">
+        <!--GenericConversionService에 추가할 컨버터를 지정한다.-->
+        <property name="converters">
+            <set>
+                <!--적용할 컨버터 빈 목록-->
+                <bean class="springbook.learningtest.spring.web.atmvc.converter.LevelToStringConverter"/>
+                <bean class="springbook.learningtest.spring.web.atmvc.converter.StringToLevelConverter"/>
+            </set>
+        </property>
+    </bean>
+<!--    <mvc:annotation-driven/>-->
 </beans>
