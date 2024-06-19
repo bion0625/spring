@@ -69,4 +69,6 @@
     <context:annotation-config/>
 
     <bean id="helloSpring" class="springbook.temp.HelloSpring"/>
+    <bean id="codeService" class="springbook.learningtest.spring.web.atmvc.CodeServiceImpl"/>
+    <bean class="springbook.learningtest.spring.web.atmvc.CodePropertyEditor"/>
 </beans>

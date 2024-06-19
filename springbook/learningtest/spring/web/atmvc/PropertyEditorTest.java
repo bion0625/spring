@@ -2,7 +2,6 @@ package springbook.learningtest.spring.web.atmvc;
 
 import org.junit.Test;
 import org.springframework.beans.propertyeditors.CharsetEditor;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
@@ -179,7 +178,6 @@ public class PropertyEditorTest extends AbstractDispatcherServletTest {
         }
     }
 
-    @Component
     static class MyWebBindingInitializer implements WebBindingInitializer {
         @Override
         public void initBinder(WebDataBinder binder, WebRequest request) {
