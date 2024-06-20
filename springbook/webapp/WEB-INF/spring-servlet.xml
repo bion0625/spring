@@ -88,7 +88,7 @@
         <property name="conversionService" ref="conversionService"/>
     </bean>
 
-    <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean" primary="true">
+    <bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean" primary="true">
         <!--GenericConversionService에 추가할 컨버터를 지정한다.-->
         <property name="converters">
             <set>
@@ -98,5 +98,7 @@
             </set>
         </property>
     </bean>
+
+    <bean class="springbook.learningtest.spring.web.atmvc.fomatter.FormatterController"/>
 <!--    <mvc:annotation-driven/>-->
 </beans>
