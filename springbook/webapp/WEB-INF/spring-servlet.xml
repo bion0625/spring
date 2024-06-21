@@ -101,5 +101,8 @@
 
     <bean class="springbook.learningtest.spring.web.atmvc.fomatter.FormatterController"/>
     <bean class="springbook.learningtest.spring.web.atmvc.webdatabinder.WebDataBinderController"/>
+
+    <bean class="springbook.learningtest.spring.web.atmvc.validator.UserValidator"/>
+    <bean class="springbook.learningtest.spring.web.atmvc.validator.ValidatorController"/>
 <!--    <mvc:annotation-driven/>-->
 </beans>
