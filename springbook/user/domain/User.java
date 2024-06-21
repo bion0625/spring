@@ -92,4 +92,24 @@ public class User{
     public String toString() {
         return this.id;
     }
+
+    private boolean autoLogin;
+
+    public void setAutoLogin(boolean autoLogin) {
+        this.autoLogin = autoLogin;
+    }
+
+    public boolean getAutoLogin() {
+        return this.autoLogin;
+    }
+
+    private String type;
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getType() {
+        return this.type;
+    }
 }

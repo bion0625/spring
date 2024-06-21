@@ -100,5 +100,6 @@
     </bean>
 
     <bean class="springbook.learningtest.spring.web.atmvc.fomatter.FormatterController"/>
+    <bean class="springbook.learningtest.spring.web.atmvc.webdatabinder.WebDataBinderController"/>
 <!--    <mvc:annotation-driven/>-->
 </beans>
