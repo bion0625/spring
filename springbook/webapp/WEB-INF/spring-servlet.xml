@@ -86,6 +86,7 @@
 
     <bean id="webBindingInitializer" class="org.springframework.web.bind.support.ConfigurableWebBindingInitializer">
         <property name="conversionService" ref="conversionService"/>
+        <property name="validator" ref="validator"/>
     </bean>
 
     <bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean" primary="true">
@@ -108,5 +109,8 @@
     <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
         <property name="basename" value="messages"/>
     </bean>
+
+    <bean class="springbook.learningtest.spring.web.formTag.formTagController"/>
+    <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
 <!--    <mvc:annotation-driven/>-->
 </beans>
