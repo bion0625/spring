@@ -104,5 +104,9 @@
 
     <bean class="springbook.learningtest.spring.web.atmvc.validator.UserValidator"/>
     <bean class="springbook.learningtest.spring.web.atmvc.validator.ValidatorController"/>
+
+    <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+        <property name="basename" value="messages"/>
+    </bean>
 <!--    <mvc:annotation-driven/>-->
 </beans>
