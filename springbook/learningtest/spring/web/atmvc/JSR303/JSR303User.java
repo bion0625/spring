@@ -1,8 +1,11 @@
 package springbook.learningtest.spring.web.atmvc.JSR303;
 
+import org.springframework.format.annotation.NumberFormat;
 import springbook.user.domain.Level;
 
 import javax.validation.constraints.Size;
+import java.util.List;
+import java.util.Set;
 
 public class JSR303User {
     String id;
@@ -119,6 +122,7 @@ public class JSR303User {
         return this.type;
     }
 
+    @NumberFormat(pattern = "###,##0")
     private int age;
 
     public void setAge(int age) {
@@ -127,5 +131,15 @@ public class JSR303User {
 
     public int getAge() {
         return this.age;
+    }
+
+    private Set<String> interests;
+
+    public void setInterests(Set<String> interests) {
+        this.interests = interests;
+    }
+
+    public Set<String> getInterests() {
+        return this.interests;
     }
 }

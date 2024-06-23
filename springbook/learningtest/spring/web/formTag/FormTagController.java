@@ -13,7 +13,7 @@ import javax.validation.Valid;
 
 @Controller
 @SessionAttributes("user")
-public class formTagController {
+public class FormTagController {
 
     @RequestMapping(value = "/form/user/add", method = RequestMethod.GET)
     public void addForm(Model model) {

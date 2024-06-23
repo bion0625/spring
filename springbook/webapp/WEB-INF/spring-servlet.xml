@@ -110,7 +110,9 @@
         <property name="basename" value="messages"/>
     </bean>
 
-    <bean class="springbook.learningtest.spring.web.formTag.formTagController"/>
+    <bean class="springbook.learningtest.spring.web.formTag.FormTagController"/>
     <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
+
+    <bean class="springbook.learningtest.spring.web.formTag.FormTagLibController"/>
 <!--    <mvc:annotation-driven/>-->
 </beans>
