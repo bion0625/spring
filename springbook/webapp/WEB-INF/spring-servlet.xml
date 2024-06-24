@@ -82,6 +82,11 @@
 
     <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
         <property name="webBindingInitializer" ref="webBindingInitializer"/>
+        <property name="messageConverters">
+            <list>
+                <bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter"/>
+            </list>
+        </property>
     </bean>
 
     <bean id="webBindingInitializer" class="org.springframework.web.bind.support.ConfigurableWebBindingInitializer">
@@ -114,5 +119,7 @@
     <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
 
     <bean class="springbook.learningtest.spring.web.formTag.FormTagLibController"/>
+
+    <bean class="springbook.learningtest.spring.web.ajax.AjaxController"/>
 <!--    <mvc:annotation-driven/>-->
 </beans>
