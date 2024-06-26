@@ -71,4 +71,13 @@
     <bean id="helloSpring" class="springbook.temp.HelloSpring"/>
     <bean id="codeService" class="springbook.learningtest.spring.web.atmvc.CodeServiceImpl"/>
     <bean class="springbook.learningtest.spring.web.atmvc.CodePropertyEditor"/>
+
+<!--    <bean class="springbook.learningtest.spring.aspect.User" abstract="true">-->
+<!--        <property name="userDao" ref="userDao"/>-->
+<!--    </bean>-->
+
+    <!--VM 옵션 (InstrumentationLoadTimeWeaver 관련)
+    -Djavaagent:springbook/lib/spring-instrument-3.0.3.RELEASE.jar-->
+    <context:load-time-weaver aspectj-weaving="on"/>
+    <context:spring-configured/>
 </beans>

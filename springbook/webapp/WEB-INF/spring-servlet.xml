@@ -125,4 +125,6 @@
     <aop:aspectj-autoproxy proxy-target-class="true"/>
     <bean class="springbook.learningtest.spring.aspect.SimpleMornitoringAspect"/>
 <!--    <mvc:annotation-driven/>-->
+
+    <bean class="springbook.learningtest.spring.aspect.AspectController"/>
 </beans>
