@@ -52,7 +52,7 @@ public class JpaTest {
     }
 
     @Test
-    public void teamplateExecuteTest() {
+    public void templateExecuteTest() {
         Member m = new Member(1, "Spring", 8.9);
         memberTemplateDao.getJpaTemplate().persist(m);
 
