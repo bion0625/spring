@@ -4,7 +4,7 @@
        xmlns:aop="http://www.springframework.org/schema/aop"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
-       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:util="http://www.springframework.org/schema/util" xmlns:task="http://www.springframework.org/schema/task"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
                         http://www.springframework.org/schema/context
@@ -14,7 +14,7 @@
                         http://www.springframework.org/schema/tx
                         http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
                         http://www.springframework.org/schema/jdbc
-                        http://www.springframework.org/schema/jdbc/spring-jdbc.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+                        http://www.springframework.org/schema/jdbc/spring-jdbc.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
 
     <util:properties id="dbdrops" location="classpath:database.properties"/>
     <bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
@@ -80,4 +80,13 @@
     -Djavaagent:springbook/lib/spring-instrument-3.0.3.RELEASE.jar-->
     <context:load-time-weaver aspectj-weaving="on"/>
     <context:spring-configured/>
+
+    <!--<task:scheduler id="myScheduler"/>
+    
+    <task:scheduled-tasks scheduler="myScheduler">
+        <task:scheduled ref="scheduleService" method="schedule" fixed-delay="3000"/>
+    </task:scheduled-tasks>-->
+
+    <bean id="scheduleService" class="springbook.service.ScheduleService"/>
+    <task:annotation-driven/>
 </beans>
