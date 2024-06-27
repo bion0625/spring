@@ -69,6 +69,12 @@ public class TxTest {
         dao.flush();
         dao.clear();
 
-        assertThat(member, is(dao.get(member.getId())));
+        compareMember(member, dao.get(member.getId()));
+    }
+
+    private void compareMember(Member member1, Member member2) {
+        assertThat(member1.getId(), is(member2.getId()));
+        assertThat(member1.getName(), is(member2.getName()));
+        assertThat(member1.getPoint(), is(member2.getPoint()));
     }
 }

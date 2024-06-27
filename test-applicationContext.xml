@@ -17,7 +17,25 @@
                         http://www.springframework.org/schema/jdbc/spring-jdbc.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
     <util:properties id="dbdrops" location="classpath:database.properties"/>
-    <bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
+    <bean class="springbook.learningtest.spring.di.ReadOnlyRoutingDataSource">
+        <property name="targetDataSources">
+            <map>
+                <entry key="READWRITE" value-ref="dataSource"/>
+                <entry key="READONLY" value-ref="subDataSource"/>
+            </map>
+        </property>
+        <property name="defaultTargetDataSource" ref="dataSource"/>
+    </bean>
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy">
+        <property name="targetDataSource" ref="realDataSource"/>
+    </bean>
+    <bean id="realDataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
+        <property name="driverClass" value="#{dbdrops['db.driverClass']}"/>
+        <property name="url" value="#{dbdrops['db.url']}"/>
+        <property name="username" value="#{dbdrops['db.username']}"/>
+        <property name="password" value="#{dbdrops['db.password']}"/>
+    </bean>
+    <bean id="subDataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
         <property name="driverClass" value="#{dbdrops['db.driverClass']}"/>
         <property name="url" value="#{dbdrops['db.url']}"/>
         <property name="username" value="#{dbdrops['db.username']}"/>
